@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Volley — Skill up · Show up · Fly</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  /* Brand tokens — from the actual logo sheet */
+  --teal:    #0F7A5A;
+  --teal-d:  #0A5040;
+  --teal-xl: #E8F7F2;
+  --purp:    #4B45B5;
+  --purp-l:  #EEEDF9;
+  --coral:   #B84C2A;
+  --coral-l: #FAEDE8;
+  --char:    #2A2A2A;
+
+  /* UI tokens */
+  --ink:    #111110;
+  --ink-2:  #38372F;
+  --mid:    #706E65;
+  --mist:   #E8E6DF;
+  --cream:  #F6F4EF;
+  --white:  #FFFFFF;
+  --border: #D8D5CC;
+  --spark:  #00C896;
+
+  /* shadows */
+  --s1: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.06);
+  --s2: 0 2px 8px rgba(0,0,0,.08), 0 12px 40px rgba(0,0,0,.10);
+  --s3: 0 4px 16px rgba(0,0,0,.12), 0 24px 60px rgba(0,0,0,.14);
+
+  --r: 16px; --rs: 10px;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body { background: var(--cream); color: var(--ink); overflow-x: hidden; }
+
+/* ══════════════════════════════════════════════
+   NAV
+══════════════════════════════════════════════ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  height: 58px; padding: 0 1.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(255,255,255,0.94);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer; text-decoration: none;
+}
+.nav-logo svg { width: 32px; height: 32px; }
+.nav-wordmark {
+  font-size: 1.15rem; font-weight: 800;
+  color: var(--teal); letter-spacing: -0.03em;
+}
+.nav-tagline {
+  font-size: 0.6rem; color: var(--mid); letter-spacing: 0.12em;
+  text-transform: uppercase; margin-left: 4px; margin-top: 2px;
+  display: none;
+}
+@media (min-width: 500px) { .nav-tagline { display: block; } }
+.nav-pills {
+  display: flex; gap: 2px; padding: 3px;
+  background: var(--cream); border-radius: 100px;
+  border: 1px solid var(--border);
+}
+.npill {
+  padding: 5px 13px; border-radius: 100px;
+  font-size: 0.75rem; font-weight: 600; color: var(--mid);
+  cursor: pointer; border: none; background: none;
+  transition: all .15s; white-space: nowrap;
+  position: relative;
+}
+.npill.active { background: var(--teal); color: white; }
+.npill:hover:not(.active) { color: var(--ink); background: var(--mist); }
+.npill .badge {
+  position: absolute; top: -4px; right: -2px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--coral); border: 2px solid var(--white);
+}
+
+/* ══════════════════════════════════════════════
+   SCREENS
+══════════════════════════════════════════════ */
+main { padding-top: 58px; }
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ══════════════════════════════════════════════
+   HERO
+══════════════════════════════════════════════ */
+.hero {
+  background: var(--teal-d);
+  padding: 4.5rem 2rem 5rem;
+  text-align: center; position: relative; overflow: hidden;
+  min-height: 580px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+/* Animated ring pulse */
+.hero-rings { position: absolute; inset: 0; pointer-events: none; }
+.hring {
+  position: absolute; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.06);
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+  animation: ringPulse 6s ease-in-out infinite;
+}
+.hring:nth-child(1) { width: 300px; height: 300px; animation-delay: 0s; }
+.hring:nth-child(2) { width: 500px; height: 500px; animation-delay: 1.5s; }
+.hring:nth-child(3) { width: 700px; height: 700px; animation-delay: 3s; }
+@keyframes ringPulse {
+  0%, 100% { opacity: 0.3; transform: translate(-50%,-50%) scale(1); }
+  50% { opacity: 0.07; transform: translate(-50%,-50%) scale(1.04); }
+}
+.hero-logo-large {
+  width: 80px; height: 80px; margin: 0 auto 1.5rem;
+  animation: logoFloat 4s ease-in-out infinite;
+}
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.hero-eyebrow {
+  font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(255,255,255,0.5); margin-bottom: 1rem; font-weight: 500;
+}
+.hero h1 {
+  font-size: clamp(2.8rem, 7vw, 5rem); font-weight: 900;
+  color: white; line-height: 0.95; letter-spacing: -0.04em;
+  margin-bottom: 0.5rem;
+}
+.hero h1 .accent { color: var(--spark); }
+.hero-sub-line {
+  font-size: clamp(1.1rem, 2.5vw, 1.4rem); color: rgba(255,255,255,0.55);
+  font-weight: 300; letter-spacing: 0.04em; margin-bottom: 2.5rem;
+}
+.hero-stat-row {
+  display: flex; gap: 2rem; flex-wrap: wrap;
+  justify-content: center; margin-bottom: 2.5rem;
+}
+.hstat { text-align: center; }
+.hstat-n { font-size: 1.8rem; font-weight: 900; color: var(--spark); line-height: 1; }
+.hstat-l { font-size: 0.65rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+.hero-cta { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 24px; border-radius: 100px; font-size: 0.875rem;
+  font-weight: 700; cursor: pointer; border: none;
+  transition: all .18s; letter-spacing: -0.01em; font-family: inherit;
+}
+.btn-spark { background: var(--spark); color: var(--ink); }
+.btn-spark:hover { background: #00E6AC; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,200,150,.4); }
+.btn-ghost { background: rgba(255,255,255,0.08); color: white; border: 1px solid rgba(255,255,255,0.18); }
+.btn-ghost:hover { background: rgba(255,255,255,0.15); }
+.btn-teal { background: var(--teal); color: white; }
+.btn-teal:hover { background: var(--teal-d); transform: translateY(-1px); }
+.btn-white { background: white; color: var(--teal); }
+.btn-white:hover { background: var(--teal-xl); }
+
+/* ══════════════════════════════════════════════
+   SECTIONS
+══════════════════════════════════════════════ */
+.section { padding: 3rem 1.5rem; max-width: 1080px; margin: 0 auto; }
+.sec-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--teal); margin-bottom: 6px; }
+.sec-title { font-size: clamp(1.6rem, 3.5vw, 2.4rem); font-weight: 800; letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 0.6rem; }
+.sec-sub { font-size: 0.9rem; color: var(--mid); line-height: 1.75; max-width: 560px; margin-bottom: 1.75rem; }
+.rule { height: 1px; background: var(--border); margin: 2.5rem 0; }
+
+/* ══════════════════════════════════════════════
+   BARRIERS
+══════════════════════════════════════════════ */
+.barriers { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 10px; margin-top: 1.25rem; }
+.bchip {
+  background: white; border-radius: var(--r); padding: 1rem 1rem 1rem 1.3rem;
+  border: 1px solid var(--border); position: relative; overflow: hidden;
+  box-shadow: var(--s1);
+}
+.bchip::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 4px 0 0 4px; }
+.bchip-red::before { background: #E04343; }
+.bchip-amber::before { background: #D08020; }
+.bchip-blue::before { background: var(--purp); }
+.bchip-teal::before { background: var(--teal); }
+.bchip-coral::before { background: var(--coral); }
+.bchip-char::before { background: var(--char); }
+.bchip-n { font-size: 2rem; font-weight: 900; line-height: 1; }
+.bchip-l { font-size: 0.76rem; color: var(--mid); margin-top: 4px; line-height: 1.35; }
+
+/* ══════════════════════════════════════════════
+   SWIPE SCREEN
+══════════════════════════════════════════════ */
+.swipe-outer { max-width: 460px; margin: 0 auto; padding: 1.25rem 1rem 2rem; }
+.vol-tabs {
+  display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 1.1rem;
+}
+.vtab {
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 13px; border-radius: 100px;
+  border: 1.5px solid var(--border); background: white;
+  cursor: pointer; transition: all .15s;
+  font-size: 0.76rem; font-weight: 600; color: var(--mid);
+}
+.vtab.active { border-color: var(--teal); background: var(--teal-xl); color: var(--teal); }
+.vtab-av {
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.58rem; font-weight: 800; flex-shrink: 0;
+}
+/* CARD STACK */
+.cstack { position: relative; width: 100%; height: 520px; margin: 0 auto 1.1rem; }
+.scard {
+  position: absolute; inset: 0; border-radius: 24px;
+  background: white; overflow: hidden; cursor: grab;
+  box-shadow: 0 4px 20px rgba(0,0,0,.10), 0 16px 60px rgba(0,0,0,.10);
+  user-select: none; transition: box-shadow .2s;
+  will-change: transform;
+}
+.scard:active { cursor: grabbing; }
+.scard.c2 { transform: translateY(10px) scale(0.97); z-index: 1; }
+.scard.c3 { transform: translateY(20px) scale(0.94); z-index: 0; }
+.scard.c1 { z-index: 10; }
+.scard.go-right { animation: flyRight .38s cubic-bezier(0.4,0,0.2,1) forwards; }
+.scard.go-left { animation: flyLeft .38s cubic-bezier(0.4,0,0.2,1) forwards; }
+@keyframes flyRight { to { transform: translateX(140%) rotate(18deg); opacity: 0; } }
+@keyframes flyLeft { to { transform: translateX(-140%) rotate(-18deg); opacity: 0; } }
+/* LIKE / NOPE stamps */
+.scard .stamp-like {
+  position: absolute; top: 20px; left: 16px; z-index: 5;
+  font-size: 0.75rem; font-weight: 900; letter-spacing: 0.1em;
+  color: var(--teal); border: 3px solid var(--teal);
+  border-radius: 8px; padding: 4px 10px; opacity: 0;
+  transform: rotate(-12deg); transition: opacity .1s;
+  text-transform: uppercase;
+}
+.scard .stamp-nope {
+  position: absolute; top: 20px; right: 16px; z-index: 5;
+  font-size: 0.75rem; font-weight: 900; letter-spacing: 0.1em;
+  color: #E04343; border: 3px solid #E04343;
+  border-radius: 8px; padding: 4px 10px; opacity: 0;
+  transform: rotate(12deg); transition: opacity .1s;
+  text-transform: uppercase;
+}
+.card-img-area {
+  height: 175px; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 5rem; overflow: hidden;
+}
+.card-badge-match {
+  position: absolute; top: 12px; left: 12px;
+  background: var(--spark); color: var(--ink);
+  border-radius: 100px; padding: 4px 11px;
+  font-size: 0.7rem; font-weight: 800;
+}
+.card-badge-cc {
+  position: absolute; top: 12px; right: 12px;
+  background: rgba(255,255,255,0.92); color: var(--teal);
+  border-radius: 100px; padding: 4px 10px;
+  font-size: 0.66rem; font-weight: 700;
+  display: flex; align-items: center; gap: 4px;
+}
+.card-body { padding: 1rem 1.2rem; }
+.ctags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 7px; }
+.ctag {
+  font-size: 0.62rem; font-weight: 700; padding: 3px 8px;
+  border-radius: 8px; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.ct-teal{background:var(--teal-xl);color:var(--teal)}
+.ct-purp{background:var(--purp-l);color:var(--purp)}
+.ct-coral{background:var(--coral-l);color:var(--coral)}
+.ct-amber{background:#FEF0D8;color:#A05C0A}
+.ct-blue{background:#E0ECFC;color:#1A5EA8}
+.ct-char{background:#EBEBEB;color:var(--char)}
+.card-title { font-size: 1.02rem; font-weight: 800; line-height: 1.2; margin-bottom: 3px; }
+.card-org { font-size: 0.78rem; color: var(--mid); display: flex; align-items: center; gap: 5px; margin-bottom: 6px; }
+.org-pip { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
+.card-desc { font-size: 0.79rem; color: var(--ink-2); line-height: 1.55; }
+.card-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.7rem 1.2rem; background: var(--cream);
+  border-top: 1px solid var(--border);
+}
+.cf-l { font-size: 0.7rem; color: var(--mid); }
+.cf-r { font-size: 0.7rem; font-weight: 700; color: var(--teal); }
+/* ACTION BAR */
+.action-bar { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 1.1rem; }
+.abtn {
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; border: none; cursor: pointer;
+  box-shadow: var(--s2); transition: all .18s; background: white;
+  font-size: 1.3rem;
+}
+.abtn:hover { transform: scale(1.1); }
+.abtn-skip { width: 54px; height: 54px; border: 2px solid #E04343; color: #E04343; }
+.abtn-skip:hover { background: #FFF0F0; }
+.abtn-info { width: 48px; height: 48px; border: 2px solid var(--purp); color: var(--purp); font-size: 1rem; }
+.abtn-super { width: 64px; height: 64px; background: var(--spark); color: var(--ink); border: none; font-size: 1.5rem; }
+.abtn-super:hover { background: #00E6AC; box-shadow: 0 4px 20px rgba(0,200,150,.45); }
+.abtn-apply { width: 54px; height: 54px; border: 2px solid var(--teal); color: var(--teal); }
+.abtn-apply:hover { background: var(--teal-xl); }
+/* SWIPE HINT */
+.swipe-hints { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: .9rem; }
+.shint {
+  display: flex; align-items: center; gap: 4px;
+  background: white; border: 1px solid var(--border); border-radius: 100px;
+  padding: 4px 10px; font-size: 0.7rem; font-weight: 600; color: var(--mid);
+}
+/* PROFILE STRIP */
+.pstrip {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--r); padding: 1rem;
+  box-shadow: var(--s1);
+}
+.pstrip-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.pstrip-av {
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 0.75rem; flex-shrink: 0;
+}
+.pill-sm {
+  font-size: 0.64rem; font-weight: 600; padding: 2px 7px;
+  border-radius: 100px; display: inline-block;
+}
+.pill-mist { background: var(--mist); color: var(--ink-2); }
+.pill-teal { background: var(--teal-xl); color: var(--teal); }
+
+/* ══════════════════════════════════════════════
+   VOLLEY BACK — two-way notifications
+══════════════════════════════════════════════ */
+.vb-screen {
+  max-width: 800px; margin: 0 auto; padding: 1.5rem;
+}
+.vb-hero {
+  background: linear-gradient(135deg, var(--teal-d), var(--teal));
+  border-radius: 24px; padding: 2.5rem 2rem;
+  color: white; text-align: center; margin-bottom: 2rem;
+  position: relative; overflow: hidden;
+}
+.vb-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.vb-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 100px; padding: 5px 14px;
+  font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: rgba(255,255,255,0.8);
+  margin-bottom: 1rem;
+}
+.vb-hero h2 { font-size: clamp(1.6rem,4vw,2.4rem); font-weight: 900; margin-bottom: .5rem; letter-spacing: -0.03em; }
+.vb-hero p { font-size: 0.92rem; opacity: 0.75; line-height: 1.65; max-width: 500px; margin: 0 auto 1.5rem; }
+.vball-diagram {
+  display: flex; align-items: center; justify-content: center;
+  gap: 1.5rem; flex-wrap: wrap; margin-top: 1rem;
+}
+.vball-side {
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 16px; padding: 1rem 1.25rem; min-width: 140px;
+}
+.vball-side-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.6; margin-bottom: 6px; }
+.vball-side-name { font-weight: 700; font-size: 0.9rem; }
+.vball-arrow {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  color: var(--spark);
+}
+.vball-arrow svg { width: 32px; height: 32px; }
+.vball-arrow-lbl { font-size: 0.62rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* NOTIFICATION FEED */
+.notif-feed {
+  display: flex; flex-direction: column; gap: 12px; margin-bottom: 2rem;
+}
+.notif-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--r); padding: 1rem 1.25rem;
+  box-shadow: var(--s1); position: relative; overflow: hidden;
+  display: flex; gap: 12px; align-items: flex-start;
+  cursor: pointer; transition: all .18s;
+}
+.notif-card:hover { box-shadow: var(--s2); transform: translateY(-1px); }
+.notif-card.org-ping { border-left: 4px solid var(--teal); }
+.notif-card.vol-reply { border-left: 4px solid var(--purp); }
+.notif-card.match-alert { border-left: 4px solid var(--spark); background: linear-gradient(135deg, rgba(0,200,150,.04), white); }
+.notif-card.urgent { border-left: 4px solid var(--coral); animation: urgentPulse 2s ease infinite; }
+@keyframes urgentPulse { 0%,100%{box-shadow:var(--s1)} 50%{box-shadow:0 0 0 3px rgba(184,76,42,.15),var(--s1)} }
+.notif-icon {
+  width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+}
+.notif-body { flex: 1; }
+.notif-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px; }
+.notif-from { font-size: 0.82rem; font-weight: 700; }
+.notif-time { font-size: 0.66rem; color: var(--mid); }
+.notif-msg { font-size: 0.82rem; color: var(--ink-2); line-height: 1.5; margin-bottom: 6px; }
+.notif-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.notif-btn {
+  padding: 5px 12px; border-radius: 100px; font-size: 0.72rem; font-weight: 700;
+  cursor: pointer; border: none; transition: all .15s;
+}
+.notif-btn-p { background: var(--teal); color: white; }
+.notif-btn-p:hover { background: var(--teal-d); }
+.notif-btn-s { background: var(--mist); color: var(--ink-2); }
+.notif-btn-s:hover { background: var(--border); }
+.notif-unread { position: absolute; top: 14px; right: 14px; width: 8px; height: 8px; border-radius: 50%; background: var(--coral); }
+
+/* HOW IT WORKS */
+.vb-flow {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 14px;
+  margin-bottom: 2rem;
+}
+.vb-step {
+  background: white; border: 1px solid var(--border); border-radius: var(--r);
+  padding: 1.25rem; box-shadow: var(--s1); position: relative;
+}
+.vb-step-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--teal); color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 800; margin-bottom: .75rem;
+}
+.vb-step-icon { font-size: 1.5rem; margin-bottom: .5rem; }
+.vb-step-title { font-weight: 700; font-size: 0.88rem; margin-bottom: 4px; }
+.vb-step-desc { font-size: 0.78rem; color: var(--mid); line-height: 1.5; }
+.vb-step-side {
+  position: absolute; top: 10px; right: 10px;
+  font-size: 0.58rem; font-weight: 700; padding: 2px 6px;
+  border-radius: 6px; text-transform: uppercase; letter-spacing: 0.06em;
+}
+.side-org { background: var(--teal-xl); color: var(--teal); }
+.side-vol { background: var(--purp-l); color: var(--purp); }
+.side-both { background: #FEF0D8; color: #A05C0A; }
+
+/* SALESFORCE SPEC */
+.sf-spec {
+  background: #1A1A2E; border-radius: var(--r);
+  padding: 1.25rem 1.5rem; font-family: 'Courier New', monospace;
+  font-size: 0.78rem; line-height: 1.8; color: #A8FF78;
+  overflow-x: auto; margin: 1rem 0;
+}
+.sf-comment { color: #6B9E6B; }
+.sf-class { color: #79B8FF; }
+.sf-string { color: #F97583; }
+.sf-kw { color: #F8C555; }
+
+/* ══════════════════════════════════════════════
+   CHARITIES
+══════════════════════════════════════════════ */
+.orgs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px,1fr)); gap: 14px; margin-top: 1.5rem; }
+.org-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--r); overflow: hidden;
+  box-shadow: var(--s1); cursor: pointer; transition: all .2s;
+}
+.org-card:hover { transform: translateY(-2px); box-shadow: var(--s2); }
+.org-hdr { padding: 1rem 1.2rem; display: flex; align-items: center; gap: 12px; }
+.org-em { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+.org-n { font-weight: 800; font-size: 0.9rem; line-height: 1.2; }
+.org-t { font-size: 0.68rem; color: var(--mid); margin-top: 2px; }
+.org-v { font-size: 0.6rem; background: var(--teal-xl); color: var(--teal); padding: 2px 6px; border-radius: 6px; font-weight: 700; margin-top: 3px; display: inline-block; }
+.org-projs { padding: .7rem 1.2rem 1rem; border-top: 1px solid var(--border); }
+.proj-r {
+  display: flex; align-items: center; gap: 7px; padding: 4.5px 0;
+  font-size: 0.77rem; border-bottom: 1px solid var(--mist);
+  transition: color .12s;
+}
+.proj-r:last-child { border-bottom: none; }
+.proj-r:hover .proj-n { color: var(--teal); }
+.proj-pip { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.proj-n { font-weight: 600; color: var(--ink-2); flex: 1; line-height: 1.3; }
+.proj-t { font-size: 0.64rem; color: var(--mid); white-space: nowrap; }
+
+/* ══════════════════════════════════════════════
+   SPARK AI
+══════════════════════════════════════════════ */
+.spark-wrap {
+  max-width: 620px; margin: 0 auto; padding: 1rem 1rem;
+  height: calc(100vh - 58px); display: flex; flex-direction: column;
+}
+.spark-hdr {
+  border-radius: var(--r); padding: 1.25rem 1.5rem;
+  background: var(--teal-d); color: white;
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: .85rem; flex-shrink: 0;
+  position: relative; overflow: hidden;
+}
+.spark-hdr::after {
+  content: 'AGENTFORCE';
+  position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+  font-size: 0.52rem; font-weight: 800; letter-spacing: 0.18em;
+  color: rgba(255,255,255,0.2);
+}
+.spark-av {
+  width: 46px; height: 46px; border-radius: 50%;
+  background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.25);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; flex-shrink: 0;
+}
+.spark-nm { font-weight: 800; font-size: 1.05rem; }
+.spark-tg { font-size: 0.7rem; opacity: 0.7; margin-top: 1px; }
+.spark-st { display: flex; align-items: center; gap: 5px; font-size: 0.64rem; opacity: 0.6; margin-top: 3px; }
+.sdot { width: 6px; height: 6px; border-radius: 50%; background: var(--spark); animation: sdotpulse 1.8s infinite; }
+@keyframes sdotpulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+.spark-disc {
+  background: #FEF0D8; border: 1px solid #D08020;
+  border-radius: var(--rs); padding: .55rem .9rem;
+  font-size: 0.7rem; color: #A05C0A; margin-bottom: .7rem;
+  flex-shrink: 0; line-height: 1.5;
+}
+.chat-msgs { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: .5rem 0; margin-bottom: .8rem; }
+.cm { max-width: 84%; }
+.cm-s { align-self: flex-start; }
+.cm-u { align-self: flex-end; }
+.cm .bbl { padding: 10px 14px; border-radius: 18px; font-size: 0.83rem; line-height: 1.58; }
+.cm-s .bbl { background: white; color: var(--ink); border: 1px solid var(--border); border-radius: 4px 18px 18px 18px; }
+.cm-u .bbl { background: var(--teal); color: white; border-radius: 18px 4px 18px 18px; }
+.cm-ts { font-size: 0.61rem; color: var(--mid); margin-top: 2px; padding: 0 4px; }
+.cm-u .cm-ts { text-align: right; }
+.sugg-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: .7rem; flex-shrink: 0; }
+.schip {
+  background: white; border: 1px solid var(--border); border-radius: 100px;
+  padding: 6px 12px; font-size: 0.72rem; font-weight: 600;
+  cursor: pointer; color: var(--teal); transition: all .12s; font-family: inherit;
+}
+.schip:hover { background: var(--teal-xl); border-color: var(--teal); }
+.cinrow {
+  display: flex; gap: 8px; flex-shrink: 0;
+  background: white; border: 1.5px solid var(--border);
+  border-radius: 100px; padding: 6px 6px 6px 16px;
+  transition: border-color .2s;
+}
+.cinrow:focus-within { border-color: var(--teal); }
+.cinp {
+  flex: 1; border: none; outline: none; font-size: 0.88rem;
+  background: none; color: var(--ink); font-family: inherit;
+}
+.cinp::placeholder { color: var(--mid); }
+.csend {
+  background: var(--teal); color: white; border: none;
+  border-radius: 100px; padding: 8px 18px;
+  font-size: 0.8rem; font-weight: 700; cursor: pointer;
+  transition: background .15s; font-family: inherit;
+}
+.csend:hover { background: var(--teal-d); }
+.typing { display: flex; gap: 4px; padding: 12px 16px; background: white; border: 1px solid var(--border); border-radius: 4px 18px 18px 18px; width: fit-content; }
+.typing span { width: 7px; height: 7px; border-radius: 50%; background: var(--mid); animation: tdot .9s infinite; }
+.typing span:nth-child(2) { animation-delay: .15s; }
+.typing span:nth-child(3) { animation-delay: .3s; }
+@keyframes tdot { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+
+/* ══════════════════════════════════════════════
+   IMPACT
+══════════════════════════════════════════════ */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 12px; margin-bottom: 2rem; }
+.kpi-card { background: white; border: 1px solid var(--border); border-radius: var(--r); padding: 1.1rem; box-shadow: var(--s1); }
+.kpi-n { font-size: 1.9rem; font-weight: 900; color: var(--teal); line-height: 1; }
+.kpi-l { font-size: 0.72rem; color: var(--mid); margin-top: 5px; line-height: 1.4; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+@media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+.card-w { background: white; border: 1px solid var(--border); border-radius: var(--r); padding: 1.4rem; box-shadow: var(--s1); }
+.rev-row { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; margin-bottom: 7px; }
+.rev-dot { width: 11px; height: 11px; border-radius: 3px; flex-shrink: 0; }
+.rev-pct { margin-left: auto; font-weight: 700; font-size: 0.85rem; }
+.qr-band {
+  background: var(--teal-d); border-radius: var(--r);
+  padding: 2rem; display: flex; align-items: center;
+  gap: 2rem; flex-wrap: wrap; color: white; margin-top: 2rem;
+}
+.qr-frame { background: white; border-radius: var(--rs); padding: 10px; flex-shrink: 0; }
+.qr-frame img { display: block; width: 110px; height: 110px; }
+.qr-url { margin-top: 8px; font-size: 0.72rem; background: rgba(255,255,255,.1); border-radius: 6px; padding: 4px 10px; display: inline-block; font-family: monospace; }
+
+/* MATCH OVERLAY */
+.overlay { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(10,80,64,0.93); align-items: center; justify-content: center; padding: 2rem; }
+.overlay.open { display: flex; }
+.ov-box { color: white; max-width: 380px; text-align: center; animation: popIn .28s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes popIn { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.ov-emoji { font-size: 4.5rem; margin-bottom: 1rem; }
+.ov-title { font-size: 2.2rem; font-weight: 900; color: var(--spark); margin-bottom: .4rem; letter-spacing: -0.03em; }
+.ov-sub { font-size: 0.92rem; opacity: 0.8; line-height: 1.65; margin-bottom: 1.75rem; }
+.ov-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: var(--char); color: white; padding: 11px 22px; border-radius: 100px; font-size: 0.82rem; font-weight: 600; box-shadow: var(--s3); opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 998; white-space: nowrap; }
+.toast.on { opacity: 1; }
+
+@media (max-width: 600px) { .nav-pills { display: none; } }
+footer { background: var(--teal-d); color: rgba(255,255,255,.45); text-align: center; padding: 1.5rem; font-size: 0.72rem; margin-top: 3rem; }
+</style>
+</head>
+<body>
+
+<!-- ════ NAV ════ -->
+<nav>
+  <a class="nav-logo" onclick="showScreen('home')">
+    <!-- REAL VOLLEY LOGO MARK: head dot + V-wings -->
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- head dot -->
+      <circle cx="20" cy="8" r="4.5" fill="#0F7A5A"/>
+      <!-- V-wings -->
+      <path d="M4 16 Q12 14 20 22 Q28 14 36 16" stroke="#0F7A5A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <!-- stem of V -->
+      <path d="M20 22 L20 32" stroke="#0F7A5A" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <span class="nav-wordmark">Volley</span>
+    <span class="nav-tagline">volunteer · connect · soar</span>
+  </a>
+  <div class="nav-pills">
+    <button class="nav-pill active" onclick="showScreen('home')">Home</button>
+    <button class="nav-pill" onclick="showScreen('swipe')">Discover</button>
+    <button class="nav-pill" onclick="showScreen('volley-back')">The Volley <span class="badge"></span></button>
+    <button class="nav-pill" onclick="showScreen('orgs')">Charities</button>
+    <button class="nav-pill" onclick="showScreen('spark')">✦ Spark</button>
+    <button class="nav-pill" onclick="showScreen('impact')">Impact</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- ════ HOME ════ -->
+<div class="screen active" id="screen-home">
+  <div class="hero">
+    <div class="hero-rings">
+      <div class="hring"></div><div class="hring"></div><div class="hring"></div>
+    </div>
+    <!-- Large logo mark in hero -->
+    <svg class="hero-logo-large" viewBox="0 0 80 80" fill="none">
+      <circle cx="40" cy="16" r="9" fill="white" opacity="0.95"/>
+      <path d="M8 32 Q24 28 40 44 Q56 28 72 32" stroke="white" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M40 44 L40 64" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
+    </svg>
+    <p class="hero-eyebrow">LSE MG4H4E · Group 2 · Altruistic Entrepreneur Project</p>
+    <h1>Skill up.<br>Show up. <span class="accent">Fly.</span></h1>
+    <p class="hero-sub-line">volunteer · connect · soar</p>
+    <div class="hero-stat-row">
+      <div class="hstat"><div class="hstat-n">51/67</div><div class="hstat-l">rated likely use 4–5/5</div></div>
+      <div class="hstat"><div class="hstat-n">39</div><div class="hstat-l">beta sign-ups</div></div>
+      <div class="hstat"><div class="hstat-n">16%</div><div class="hstat-l">formal vol. England ↓</div></div>
+      <div class="hstat"><div class="hstat-n">CIC</div><div class="hstat-l">mission-locked</div></div>
+    </div>
+    <div class="hero-cta">
+      <button class="btn btn-spark" onclick="showScreen('swipe')">▶ Start swiping</button>
+      <button class="btn btn-ghost" onclick="showScreen('volley-back')">↔ The Volley</button>
+      <button class="btn btn-ghost" onclick="showScreen('spark')">✦ Ask Spark</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <p class="sec-label">The problem</p>
+    <h2 class="sec-title">Why 50 of 67 people aren't<br>volunteering enough</h2>
+    <p class="sec-sub">Our primary research, April–May 2026. These barriers aren't attitudes — they're structural failures in how volunteering is organised.</p>
+    <div class="barriers">
+      <div class="bchip bchip-red"><div class="bchip-n">32</div><div class="bchip-l">Work &amp; family commitments</div></div>
+      <div class="bchip bchip-amber"><div class="bchip-n">29</div><div class="bchip-l">Can't find relevant opportunities</div></div>
+      <div class="bchip bchip-blue"><div class="bchip-n">25</div><div class="bchip-l">Poor visibility of credible charities</div></div>
+      <div class="bchip bchip-teal"><div class="bchip-n">24</div><div class="bchip-l">Rigid scheduling</div></div>
+      <div class="bchip bchip-coral"><div class="bchip-n">23</div><div class="bchip-l">Uncertainty about trustworthiness</div></div>
+      <div class="bchip bchip-char"><div class="bchip-n">19</div><div class="bchip-l">Skills left underutilised</div></div>
+    </div>
+    <div class="rule"></div>
+    <p class="sec-label">What makes Volley different</p>
+    <h2 class="sec-title">Four things. Done properly.</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-top:1.25rem">
+      <div class="card-w"><div style="font-size:1.5rem;margin-bottom:.5rem">⚡</div><div style="font-weight:700;font-size:.9rem;margin-bottom:4px">Skill-based matching</div><div style="font-size:.78rem;color:var(--mid);line-height:1.5">Apex engine scores every opp across skills, availability, borough and feedback. Only roles where you'll genuinely matter.</div></div>
+      <div class="card-w"><div style="font-size:1.5rem;margin-bottom:.5rem">🛡️</div><div style="font-weight:700;font-size:.9rem;margin-bottom:4px">CC API verified</div><div style="font-size:.78rem;color:var(--mid);line-height:1.5">Every organisation auto-checked against the Charity Commission API before posting. No ambiguity, no guesswork.</div></div>
+      <div class="card-w"><div style="font-size:1.5rem;margin-bottom:.5rem">↔</div><div style="font-weight:700;font-size:.9rem;margin-bottom:4px">The Volley — two-way</div><div style="font-size:.78rem;color:var(--mid);line-height:1.5">Like a volleyball — it travels both ways. Charities can ping you when a perfect role opens. You volley back with one tap.</div></div>
+      <div class="card-w"><div style="font-size:1.5rem;margin-bottom:.5rem">✦</div><div style="font-weight:700;font-size:.9rem;margin-bottom:4px">Spark AI companion</div><div style="font-size:.78rem;color:var(--mid);line-height:1.5">Explains matches, preps you for roles, answers org questions. Read-only — never touches your personal data.</div></div>
+    </div>
+    <div class="rule"></div>
+    <p style="text-align:center"><button class="btn btn-teal" onclick="showScreen('volley-back')">↔ See The Volley feature →</button></p>
+  </div>
+</div>
+
+<!-- ════ DISCOVER / SWIPE ════ -->
+<div class="screen" id="screen-swipe">
+  <div class="section" style="padding-bottom:0">
+    <p class="sec-label">Discover — UC-1 · Volunteer Lifecycle</p>
+    <h2 class="sec-title" style="margin-bottom:.4rem">Your matches, right now</h2>
+    <p class="sec-sub" style="margin-bottom:1rem">Swipe right to apply, left to pass. Switch volunteer to see entirely different skill-driven match sets — same platform, different people, different results.</p>
+    <div class="vol-tabs" id="vol-tabs">
+      <div class="vtab active" id="vt-sukie" onclick="setVol('sukie')"><div class="vtab-av" style="background:var(--purp-l);color:var(--purp)">SG</div>Sukie Gandhi</div>
+      <div class="vtab" id="vt-eashwar" onclick="setVol('eashwar')"><div class="vtab-av" style="background:var(--teal-xl);color:var(--teal)">ER</div>Eashwar Ramesh</div>
+      <div class="vtab" id="vt-chelsea" onclick="setVol('chelsea')"><div class="vtab-av" style="background:var(--coral-l);color:var(--coral)">CR</div>Chelsea Roth</div>
+      <div class="vtab" id="vt-nicole" onclick="setVol('nicole')"><div class="vtab-av" style="background:#FEF0D8;color:#A05C0A">NH</div>Nicole Heimberg</div>
+    </div>
+  </div>
+  <div class="swipe-outer">
+    <div class="swipe-hints">
+      <div class="shint">← Pass</div>
+      <span style="color:var(--border)">·</span>
+      <div class="shint" style="border-color:var(--teal);color:var(--teal)">✓ Apply →</div>
+      <span style="color:var(--border)">·</span>
+      <div class="shint" style="border-color:var(--spark);color:#A05C0A">⚡ Super</div>
+    </div>
+    <div class="cstack" id="cstack"></div>
+    <div class="action-bar">
+      <button class="abtn abtn-skip" onclick="doSwipe('left')" title="Pass">✕</button>
+      <button class="abtn abtn-info" onclick="showScreen('spark')" title="Ask Spark">✦</button>
+      <button class="abtn abtn-super" onclick="doSwipe('super')" title="Super match">⚡</button>
+      <button class="abtn abtn-apply" onclick="doSwipe('right')" title="Apply">✓</button>
+    </div>
+    <div class="pstrip" id="pstrip"></div>
+  </div>
+</div>
+
+<!-- ════ THE VOLLEY — TWO-WAY NOTIFICATIONS ════ -->
+<div class="screen" id="screen-volley-back">
+  <div class="vb-screen">
+
+    <div class="vb-hero">
+      <div class="vb-badge">
+        <svg width="14" height="14" viewBox="0 0 40 40" fill="none">
+          <circle cx="20" cy="8" r="4.5" fill="white"/>
+          <path d="M4 16 Q12 14 20 22 Q28 14 36 16" stroke="white" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+          <path d="M20 22 L20 32" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+        </svg>
+        New Feature — The Volley
+      </div>
+      <h2>Volunteering travels<br>in both directions</h2>
+      <p>Just like a volleyball — energy moves both ways across the net. When a role that fits your skills opens at a charity you care about, they can ping you directly. You volley back with one tap.</p>
+      <div class="vball-diagram">
+        <div class="vball-side">
+          <div class="vball-side-label">Volunteer</div>
+          <div class="vball-side-name">Sukie Gandhi</div>
+          <div style="font-size:.7rem;opacity:.6;margin-top:3px">12× Salesforce Certified</div>
+        </div>
+        <div class="vball-arrow">
+          <svg viewBox="0 0 60 32" fill="none">
+            <!-- Ball trajectory arc -->
+            <path d="M4 28 Q15 4 30 8 Q45 12 56 28" stroke="#00C896" stroke-width="2" stroke-dasharray="4 3" fill="none" stroke-linecap="round"/>
+            <path d="M4 28 Q15 12 30 8 Q45 4 56 4" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="4 3" fill="none" stroke-linecap="round"/>
+            <!-- Arrows -->
+            <polygon points="52,26 60,28 54,33" fill="#00C896"/>
+            <polygon points="8,6 0,4 6,-1" fill="rgba(255,255,255,0.5)"/>
+          </svg>
+          <div class="vball-arrow-lbl">The Volley</div>
+        </div>
+        <div class="vball-side">
+          <div class="vball-side-label">Charity</div>
+          <div class="vball-side-name">Hackney Migrant Centre</div>
+          <div style="font-size:.7rem;opacity:.6;margin-top:3px">Reg. Charity · CC Verified</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIVE NOTIFICATION FEED -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
+      <div>
+        <p class="sec-label">Live Notification Feed</p>
+        <h3 style="font-size:1.1rem;font-weight:800;letter-spacing:-0.02em">Sukie's Volley inbox</h3>
+      </div>
+      <span style="font-size:.7rem;background:var(--coral-l);color:var(--coral);padding:4px 10px;border-radius:100px;font-weight:700">3 unread</span>
+    </div>
+
+    <div class="notif-feed">
+
+      <!-- URGENT org ping — favourite charity match -->
+      <div class="notif-card urgent">
+        <div class="notif-unread"></div>
+        <div class="notif-icon" style="background:var(--teal-xl)">
+          <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="8" r="4.5" fill="#0F7A5A"/>
+            <path d="M4 16 Q12 14 20 22 Q28 14 36 16" stroke="#0F7A5A" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <path d="M20 22 L20 32" stroke="#0F7A5A" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="notif-body">
+          <div class="notif-header">
+            <div class="notif-from">🌍 Hackney Migrant Centre <span style="font-size:.6rem;background:var(--coral-l);color:var(--coral);padding:2px 6px;border-radius:6px;font-weight:700;margin-left:4px">Favourite ★</span></div>
+            <div class="notif-time">2 min ago</div>
+          </div>
+          <div class="notif-msg">Hi Sukie — a Salesforce setup role just opened and your profile is a <strong>96% match</strong>. We've never had a certified Salesforce volunteer before. We think you could transform how we track our 500+ school partners. Can you spare a Saturday morning?</div>
+          <div class="notif-actions">
+            <button class="notif-btn notif-btn-p" onclick="volleyBack(this,'Hackney Migrant Centre')">⚡ Volley Back — Apply</button>
+            <button class="notif-btn notif-btn-s" onclick="showScreen('spark')">✦ Ask Spark first</button>
+            <button class="notif-btn notif-btn-s">Maybe later</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- match alert — algorithm triggered -->
+      <div class="notif-card match-alert">
+        <div class="notif-unread"></div>
+        <div class="notif-icon" style="background:rgba(0,200,150,.1)">⚡</div>
+        <div class="notif-body">
+          <div class="notif-header">
+            <div class="notif-from">Volley Match Alert</div>
+            <div class="notif-time">18 min ago</div>
+          </div>
+          <div class="notif-msg">New role at <strong>Charityworks</strong> matches 89% of your profile. <em>Data Literacy Workshop for Charity Staff</em> — 3 hrs, weekend, Central London. 4 others have already swiped right.</div>
+          <div class="notif-actions">
+            <button class="notif-btn notif-btn-p" onclick="volleyBack(this,'Charityworks')">✓ Apply now</button>
+            <button class="notif-btn notif-btn-s" onclick="showScreen('swipe')">See card</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- org message — human from charity -->
+      <div class="notif-card org-ping">
+        <div class="notif-unread"></div>
+        <div class="notif-icon" style="background:var(--purp-l)">💻</div>
+        <div class="notif-body">
+          <div class="notif-header">
+            <div class="notif-from">Good Things Foundation</div>
+            <div class="notif-time">1 hr ago</div>
+          </div>
+          <div class="notif-msg">We saw your Salesforce certifications and Faithforce equality work — our Digital Inclusion cohort starts in 3 weeks. We'd love to have you. No prior mentoring experience needed. Would you be up for an informal chat first?</div>
+          <div class="notif-actions">
+            <button class="notif-btn notif-btn-p" onclick="volleyBack(this,'Good Things Foundation')">↔ Volley Back — Yes</button>
+            <button class="notif-btn notif-btn-s">Decline</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- confirmed — two-way completed -->
+      <div class="notif-card vol-reply">
+        <div class="notif-icon" style="background:var(--teal-xl)">✅</div>
+        <div class="notif-body">
+          <div class="notif-header">
+            <div class="notif-from">Magic Breakfast · Confirmed</div>
+            <div class="notif-time">Yesterday</div>
+          </div>
+          <div class="notif-msg">Sukie accepted your role. Volunteer Hours record created in Salesforce (ApplicationStatus = Confirmed). Match score: <strong>96</strong>. Session: Saturday 9:00–13:00, remote. DBS: not required.</div>
+          <div class="notif-actions">
+            <button class="notif-btn notif-btn-s" onclick="showScreen('spark')">✦ Ask Spark to prep me</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- org feedback request -->
+      <div class="notif-card org-ping">
+        <div class="notif-icon" style="background:var(--coral-l)">⭐</div>
+        <div class="notif-body">
+          <div class="notif-header">
+            <div class="notif-from">The Kids Network → Sukie</div>
+            <div class="notif-time">3 days ago</div>
+          </div>
+          <div class="notif-msg">We completed our data analysis task together. How did it go? Leave us feedback and we'll leave yours — both sides matter to the Volley quality score.</div>
+          <div class="notif-actions">
+            <button class="notif-btn notif-btn-p" onclick="showToast('Feedback submitted — WouldWorkAgain = true ✓')">Leave feedback</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- HOW THE VOLLEY WORKS -->
+    <p class="sec-label" style="margin-bottom:6px">How it works in Salesforce</p>
+    <h3 style="font-size:1.1rem;font-weight:800;margin-bottom:.5rem;letter-spacing:-0.02em">Both sides of the net</h3>
+    <p style="font-size:.83rem;color:var(--mid);line-height:1.65;margin-bottom:1.25rem">The Volley is built on two Salesforce objects and a bidirectional Flow architecture. Neither side can spam — every ping goes through the matching engine first.</p>
+
+    <div class="vb-flow">
+      <div class="vb-step">
+        <div class="vb-step-side side-org">Org</div>
+        <div class="vb-step-icon">📋</div>
+        <div class="vb-step-title">Org posts a role</div>
+        <div class="vb-step-desc">Volunteer Job record created. VolleyMatchingService runs automatically and scores all Active volunteers. Threshold: 80+ score required before any ping is sent.</div>
+      </div>
+      <div class="vb-step">
+        <div class="vb-step-side side-both">Both</div>
+        <div class="vb-step-icon">🎯</div>
+        <div class="vb-step-title">Engine finds your match</div>
+        <div class="vb-step-desc">VolleyPing__c record created for volunteers above threshold. Favourite-charity volunteers are flagged Priority = true and pinged first via Experience Cloud notification.</div>
+      </div>
+      <div class="vb-step">
+        <div class="vb-step-side side-org">Org</div>
+        <div class="vb-step-icon">📣</div>
+        <div class="vb-step-title">Org can also message</div>
+        <div class="vb-step-desc">Premium-tier orgs can send one personalised message per matched volunteer per role (rate-limited by Flow). Message stored in VolleyMessage__c — never email scraped.</div>
+      </div>
+      <div class="vb-step">
+        <div class="vb-step-side side-vol">Volunteer</div>
+        <div class="vb-step-icon">↔</div>
+        <div class="vb-step-title">Volunteer volleys back</div>
+        <div class="vb-step-desc">One tap in the portal or mobile app. Flow creates Volunteer Hours (Applied), sends confirmation to both sides, and clears the ping queue for this role.</div>
+      </div>
+      <div class="vb-step">
+        <div class="vb-step-side side-both">Both</div>
+        <div class="vb-step-icon">🔒</div>
+        <div class="vb-step-title">Safeguarding always wins</div>
+        <div class="vb-step-desc">Pings are blocked if DBS is required but not cleared. Orgs cannot see volunteer PII until confirmed. Feedback flags go to Volley safeguarding team, not the org.</div>
+      </div>
+      <div class="vb-step">
+        <div class="vb-step-side side-vol">Volunteer</div>
+        <div class="vb-step-icon">⭐</div>
+        <div class="vb-step-title">Both sides leave feedback</div>
+        <div class="vb-step-desc">Post-task Scheduled Flow triggers feedback forms for both volunteer and org. WouldWorkAgain from both sides is the key quality signal — it's a two-way rating.</div>
+      </div>
+    </div>
+
+    <!-- SALESFORCE OBJECTS -->
+    <p class="sec-label" style="margin-bottom:6px">Salesforce architecture</p>
+    <div class="sf-spec">
+<span class="sf-comment">// Two new custom objects for The Volley</span>
+
+<span class="sf-class">VolleyPing__c</span> {
+  <span class="sf-kw">Contact__c</span>         Lookup(Contact)      <span class="sf-comment">// matched volunteer</span>
+  <span class="sf-kw">VolunteerJob__c</span>    Lookup(VJ)           <span class="sf-comment">// the role</span>
+  <span class="sf-kw">MatchScore__c</span>      Number(3,0)          <span class="sf-comment">// must be ≥80 to fire</span>
+  <span class="sf-kw">PingType__c</span>        Picklist             <span class="sf-comment">// Algorithm | OrgMessage | FavouriteAlert</span>
+  <span class="sf-kw">IsFavourite__c</span>     Checkbox             <span class="sf-comment">// vol has starred this org</span>
+  <span class="sf-kw">Status__c</span>          Picklist             <span class="sf-comment">// Sent | Seen | Accepted | Declined | Expired</span>
+  <span class="sf-kw">ExpiresAt__c</span>       DateTime             <span class="sf-comment">// 72 hrs — then archived</span>
+  <span class="sf-kw">OrgMessage__c</span>      Text Area(500)       <span class="sf-comment">// optional personalised message</span>
+}
+
+<span class="sf-class">FavouriteCharity__c</span> {
+  <span class="sf-kw">Contact__c</span>         Lookup(Contact)      <span class="sf-comment">// the volunteer</span>
+  <span class="sf-kw">Account__c</span>         Lookup(Account)      <span class="sf-comment">// the charity</span>
+  <span class="sf-kw">NotifyOnNewRole__c</span> Checkbox  default=true  <span class="sf-comment">// drives ping logic</span>
+  <span class="sf-kw">NotifyThreshold__c</span> Number    default=75   <span class="sf-comment">// min score to ping</span>
+}
+
+<span class="sf-comment">// Flow: Volley_Bidirectional_Ping
+// Trigger: Volunteer Job — After Insert / After Update (Status → Active)
+// 1. Call VolleyMatchingService.getMatches() — returns scored Contacts
+// 2. Filter: score ≥ job.MatchThreshold__c (default 80)
+// 3. For each match: create VolleyPing__c
+// 4. If Contact has FavouriteCharity__c for this Account: set IsFavourite = true
+//    → ExperienceCloud notification priority: HIGH
+// 5. If org is Premium tier + OrgMessage provided: set OrgMessage__c
+// 6. Schedule expiry check: Scheduled Flow at 72 hrs</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════ CHARITIES ════ -->
+<div class="screen" id="screen-orgs">
+  <div class="section">
+    <p class="sec-label">Verified Charities — UC-2</p>
+    <h2 class="sec-title">London's community,<br>on one platform</h2>
+    <p class="sec-sub">6 real London charities — all Charity Commission verified. Each has 5 scoped, time-bound projects. Click any project to see it in the swipe feed.</p>
+    <div class="orgs-grid" id="orgs-grid"></div>
+  </div>
+</div>
+
+<!-- ════ SPARK AI ════ -->
+<div class="screen" id="screen-spark">
+  <div class="spark-wrap">
+    <div class="spark-hdr">
+      <div class="spark-av">✦</div>
+      <div>
+        <div class="spark-nm">Spark</div>
+        <div class="spark-tg">Volley's AI companion — powered by Salesforce Agentforce</div>
+        <div class="spark-st"><div class="sdot"></div>Read-only · No PII access · Cannot make decisions</div>
+      </div>
+    </div>
+    <div class="spark-disc">⚠ Spark explains matches and answers questions. All safeguarding, verification, and Volley pings are handled by deterministic Flows — never AI.</div>
+    <div class="chat-msgs" id="smsgs">
+      <div class="cm cm-s"><div class="bbl">Hi! I'm <strong>Spark ✦</strong> — Volley's AI companion.<br><br>I can explain why you matched, help you prep for a role, answer questions about any of our 6 verified London charities, or explain how The Volley two-way feature works.<br><br>What would you like to know?</div><div class="cm-ts">Just now</div></div>
+    </div>
+    <div class="sugg-row" id="sugg-row">
+      <button class="schip" onclick="sparkSay('I never find opportunities that fit my schedule')">&#128336; Can\'t fit it in</button>
+      <button class="schip" onclick="sparkSay('I don\'t know where to find good volunteering opportunities')">&#128269; Where do I look?</button>
+      <button class="schip" onclick="sparkSay('My skills always get wasted when I volunteer')">&#128736; Skills get wasted</button>
+      <button class="schip" onclick="sparkSay('The application process is too complicated and slow')">&#128195; Too much admin</button>
+      <button class="schip" onclick="sparkSay('How do I know a charity is trustworthy?')">&#128737; Is this legit?</button>
+      <button class="schip" onclick="sparkSay('I signed up but never heard back from the organisation')">&#128235; Got ghosted</button>
+      <button class="schip" onclick="sparkSay('I work multiple jobs and have no bandwidth left')">&#128188; Work takes everything</button>
+      <button class="schip" onclick="sparkSay('How does The Volley two-way feature work?')">&#8596; How does The Volley work?</button>
+    </div>
+    <div class="cinrow">
+      <input class="cinp" id="cinp" placeholder="Ask Spark anything..." onkeydown="if(event.key==='Enter')sendSpark()">
+      <button class="csend" onclick="sendSpark()">Send ↗</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ IMPACT ════ -->
+<div class="screen" id="screen-impact">
+  <div class="section">
+    <p class="sec-label">Impact &amp; Revenue — UC-3</p>
+    <h2 class="sec-title">Every metric lives in Salesforce</h2>
+    <p class="sec-sub">No manual tracking. Every canvas KPI maps to a live field or roll-up. Corporate clients fund the cross-subsidy through Agentforce-generated impact reports.</p>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-n">39</div><div class="kpi-l">Beta volunteers from survey</div></div>
+      <div class="kpi-card"><div class="kpi-n">6</div><div class="kpi-l">London charities verified &amp; live</div></div>
+      <div class="kpi-card"><div class="kpi-n">30</div><div class="kpi-l">Active opportunities posted</div></div>
+      <div class="kpi-card"><div class="kpi-n">94%</div><div class="kpi-l">Target: would-work-again rate</div></div>
+      <div class="kpi-card"><div class="kpi-n">↔</div><div class="kpi-l">The Volley — world's first two-way volunteering notification</div></div>
+      <div class="kpi-card"><div class="kpi-n">CIC</div><div class="kpi-l">Asset-lock protects mission always</div></div>
+    </div>
+    <div class="two-col">
+      <div class="card-w">
+        <p style="font-weight:700;margin-bottom:1rem">Revenue model</p>
+        <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap">
+          <svg width="110" height="110" viewBox="0 0 110 110">
+            <circle cx="55" cy="55" r="42" fill="none" stroke="#0F7A5A" stroke-width="16" stroke-dasharray="84 180" stroke-dashoffset="0"/>
+            <circle cx="55" cy="55" r="42" fill="none" stroke="#4B45B5" stroke-width="16" stroke-dasharray="60 204" stroke-dashoffset="-84"/>
+            <circle cx="55" cy="55" r="42" fill="none" stroke="#A05C0A" stroke-width="16" stroke-dasharray="55 209" stroke-dashoffset="-144"/>
+            <circle cx="55" cy="55" r="42" fill="none" stroke="#B84C2A" stroke-width="16" stroke-dasharray="36 228" stroke-dashoffset="-199"/>
+            <circle cx="55" cy="55" r="42" fill="none" stroke="#2A2A2A" stroke-width="16" stroke-dasharray="36 228" stroke-dashoffset="-235"/>
+            <text x="55" y="52" text-anchor="middle" font-size="9" font-weight="700" fill="#111110">Revenue</text>
+            <text x="55" y="63" text-anchor="middle" font-size="8" fill="#706E65">model</text>
+          </svg>
+          <div>
+            <div class="rev-row"><div class="rev-dot" style="background:#0F7A5A"></div><span>NGO premium subs</span><span class="rev-pct">32%</span></div>
+            <div class="rev-row"><div class="rev-dot" style="background:#4B45B5"></div><span>Corporate CSR</span><span class="rev-pct">22%</span></div>
+            <div class="rev-row"><div class="rev-dot" style="background:#A05C0A"></div><span>Grants</span><span class="rev-pct">20%</span></div>
+            <div class="rev-row"><div class="rev-dot" style="background:#B84C2A"></div><span>P2P donation commission</span><span class="rev-pct">13%</span></div>
+            <div class="rev-row"><div class="rev-dot" style="background:#2A2A2A"></div><span>Local business rewards</span><span class="rev-pct">13%</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-w">
+        <p style="font-weight:700;margin-bottom:.75rem">Agentforce — Corporate Impact Narrator</p>
+        <div style="background:var(--teal-xl);border-radius:var(--rs);padding:.9rem;font-size:.82rem;color:var(--teal);line-height:1.65;margin-bottom:.75rem">"In 2026, Acme Corp's 28 employees contributed 342 hours across 7 London boroughs, supporting education, digital inclusion, and food poverty causes aligned with SDG 4, 10 and 17. 94% of partner charities confirmed they would work with Acme volunteers again."<div style="font-size:.66rem;opacity:.7;margin-top:5px">Generated into CSRProgramme__c.ImpactNarrative__c — reviewed by staff before PDF. Merge fields only, no hallucination risk.</div></div>
+        <p style="font-size:.76rem;color:var(--mid);line-height:1.5">Agent scheduled, not user-facing. No PII access. All verification and safeguarding: deterministic Flows only.</p>
+      </div>
+    </div>
+    <div class="qr-band">
+      <div class="qr-frame"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAAAklEQVR4AewaftIAAAVFSURBVO3B0Y0cWw5EwRTRBtA7mnFtoRn0jh7o6W+xwORHF2oKPdKJ+PX7DwH4UgiAFQJghQBYIQBWCIAVAmCFAFghAFYIgBUCYIUAWCEAVgiA9dJFeUo/3fboTnlKd9se3S1PydkefSVP6afbHr0rBMAKAbBCAKwQACsEwAoBsF76BtujT5Gn9JTtkZOndEWekrM9cvKUnrI9+hR5SncKAbBCAKwQACsEwAoBsEIArJcelqd0t+3RnfKUnO2Rk6fkbI/ulqd0xfboKXlKd9sePSUEwAoBsEIArBAAKwTACgGwXsJb8pSc7ZGTp3S37RG+VwiAFQJghQBYIQBWCIAVAmC9hLdsj5w8JWd75OQpPSlPydke4X9CAKwQACsEwAoBsEIArBAA66WHbY/+VtsjJ0/J2R45eUpOntKn2x79ZCEAVgiAFQJghQBYIQBWCID10jfIU/oX5Sk52yMnT8nZHjl5Ss72yMlTulOe0t8qBMAKAbBCAKwQACsEwAoBsF66aHv0L8pTutv26Enbo3dtj/5FIQBWCIAVAmCFAFghANav33/ogjwlZ3vk5Cl9iu3Rp8tTutv26F15Sp9ie/SUEAArBMAKAbBCAKwQACsEwHrpYdujv1WekrM9umJ7dLc8JWd79JXtkZOn5GyP7pan5GyP7hQCYIUAWCEAVgiAFQJghQBYv37/oQflKV2xPXLylK7YHn0lT8nZHt0tT8nZHjl5Sldsj5w8pa9sj67IU7pie+TkKV2xPXpXCIAVAmCFAFghAFYIgBUCYL10UZ6Ssz1ytkdX5Ck526NPl6fkbI+u2B5dkad0pzwlZ3t0t+2Rk6d0pxAAKwTACgGwQgCsEAArBMD69fsPXZCndLftkZOn9JTtkZOn9BNsj67IU3rK9sjJU7rb9uhdIQBWCIAVAmCFAFghAFYIgPXSN9geXZGn5GyP7pan9JU8pSu2Rz/d9uhdeUrO9sjJU3K2R06ekrM9ulMIgBUCYIUAWCEAVgiAFQJgvfRBtkd3y1NytkdfyVNytkdX5CldsT1y8pSesj26Ik/pSXlKzvboXSEAVgiAFQJghQBYIQBWCID10sPylJ60PXrX9sjJU7rb9uhJ26N35SndbXt0xfbIyVO6UwiAFQJghQBYIQBWCIAVAmC99LDt0d3ylJw8pXdtjz5FntIV2yMnT+nT5Sk52yNne3SnEAArBMAKAbBCAKwQACsEwPr1+w/h/+QpXbE9uiJP6Yrt0RV5Ss726E55Sldsjz5BCIAVAmCFAFghAFYIgPXSRXlKP9326CvbIydPyclTcrZHzvboijwlZ3t0pzwlZ3t0xfbIyVO62/boXSEAVgiAFQJghQBYIQBWCID10jfYHn2KPKV35Sk526O75Sk526NPsD26W56Ssz1y8pSc7dGdQgCsEAArBMAKAbBCAKwQAOulh+Up3W179LfKU7oiT+mKPKWnbI+cPKUr8pSc7dG7QgCsEAArBMAKAbBCAKwQAOsl3CZPydkeOdsjJ0/J2R7dLU/pXdsjJ0/JyVP6dCEAVgiAFQJghQBYIQBWCID1Em6zPXLylO6Wp+Rsj67YHt1pe+TkKV2xPXLylO4UAmCFAFghAFYIgBUCYIUAWC89bHv06bZHTp7S3bZHV+QpOXlKd9oeOXlKd9sefYIQACsEwAoBsEIArBAAKwTAeukb5Cn9ZHlKV2yPnDwlJ0/J2R4526On5Ck9KU/pE4QAWCEAVgiAFQJghQBYIQDWr99/CMCXQgCsEAArBMAKAbBCAKwQACsEwAoBsEIArBAAKwTACgGw/gPrWIN+4Y7r9gAAAABJRU5ErkJggg==" alt="QR Code"></div>
+      <div style="flex:1"><h3 style="font-size:1.1rem;font-weight:800;margin-bottom:5px">Scan to try the beta</h3><p style="font-size:.83rem;opacity:.75;line-height:1.6">Access the Volley volunteer portal. 39 beta testers from our survey are ready to go.</p><div class="qr-url">volley.cic/demo</div></div>
+      <div style="text-align:right;opacity:.55;font-size:.72rem;line-height:1.9;flex-shrink:0">Salesforce NPSP<br>+ Experience Cloud<br>+ Agentforce<br>+ The Volley (new)</div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- MATCH OVERLAY -->
+<div class="overlay" id="ov">
+  <div class="ov-box">
+    <div class="ov-emoji" id="ov-emoji">🎉</div>
+    <div class="ov-title" id="ov-title">Applied!</div>
+    <div class="ov-sub" id="ov-sub">Confirmed.</div>
+    <div class="ov-btns">
+      <button class="btn btn-spark" onclick="closeOv()">Keep swiping ⚡</button>
+      <button class="btn btn-ghost" onclick="closeOv();showScreen('spark')">✦ Ask Spark</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<footer>Volley CIC — LSE MG4H4E Altruistic Entrepreneur Project · Group 2 · Candidate Numbers: 72030, 73572, 60188, 73985, 61680 · volunteer · connect · soar</footer>
+
+<script>
+// ══════════════ DATA ══════════════
+const ORGS = [
+  {id:'hmc',name:'Hackney Migrant Centre',em:'🌍',bg:'#E0ECFC',ec:'#1A5EA8',type:'Registered Charity · Hackney, E8',reg:'1171353',
+   projs:[{t:'Immigration Legal Casework Support',ti:'3 hrs/week',d:'#1A5EA8'},{t:'Wednesday Wellbeing Meal Service',ti:'Half-day',d:'#B84C2A'},{t:'Digital Onboarding for Asylum Seekers',ti:'2 hrs',d:'#4B45B5'},{t:'eVisa Account Setup Assistant',ti:'3 hrs',d:'#0F7A5A'},{t:'Fundraising Copy & Donor Comms',ti:'3 hrs',d:'#C42B6E'}]},
+  {id:'rspca',name:'RSPCA Central London',em:'🐾',bg:'#FDEAE4',ec:'#B84C2A',type:'Charity Branch · Central London',reg:'219099',
+   projs:[{t:'Animal Rescue Transport Volunteer',ti:'4–6 hrs/shift',d:'#B84C2A'},{t:'Wildlife Photography for Rehoming',ti:'2 hrs',d:'#A05C0A'},{t:'Fundraising Event Support',ti:'Half-day',d:'#4B45B5'},{t:'Branch Admin & Data Entry',ti:'2 hrs/week',d:'#1A5EA8'},{t:'Social Media Animal Stories',ti:'2 hrs',d:'#C42B6E'}]},
+  {id:'gw',name:'Groundwork London',em:'🌱',bg:'#E8F7F2',ec:'#0F7A5A',type:'Registered Charity · SE1',reg:'1121105',
+   projs:[{t:'Community Garden Day Volunteer',ti:'Full day',d:'#0F7A5A'},{t:'Food Poverty Growing Project',ti:'Half-day/month',d:'#A05C0A'},{t:'Park Biodiversity Survey',ti:'Half-day',d:'#1A5EA8'},{t:'Green Community Grants Writer',ti:'4 hrs',d:'#C42B6E'},{t:'Youth Green Skills Coach',ti:'2 hrs/week',d:'#4B45B5'}]},
+  {id:'tkn',name:'The Kids Network',em:'⭐',bg:'#EEEDF9',ec:'#4B45B5',type:'Registered Charity · Pan-London',reg:'1177840',
+   projs:[{t:'One-to-One Child Mentor (8–11)',ti:'1–3 hrs/week',d:'#4B45B5'},{t:'Mentor Peer Network Facilitator',ti:'2 hrs/month',d:'#1A5EA8'},{t:'Training Day Support Volunteer',ti:'Full day',d:'#0F7A5A'},{t:'Impact Data Analysis',ti:'3 hrs',d:'#B84C2A'},{t:'Wellbeing Content Writer',ti:'2 hrs',d:'#C42B6E'}]},
+  {id:'re',name:'Re-Engage',em:'☕',bg:'#FEF0D8',ec:'#A05C0A',type:'National Charity · London chapters',reg:'211241',
+   projs:[{t:'Call Companion (Telephone Befriending)',ti:'30 min × 2/month',d:'#A05C0A'},{t:'Rainbow Call Companion (LGBT+ 75+)',ti:'30 min/fortnight',d:'#C42B6E'},{t:'Monthly Tea Party Host',ti:'Half-day/month',d:'#B84C2A'},{t:'Activity Group Volunteer Driver',ti:'2 hrs/session',d:'#1A5EA8'},{t:'Volunteer Coordinator Admin',ti:'2 hrs/week',d:'#0F7A5A'}]},
+  {id:'abbey',name:'Abbey Community Centre',em:'🏡',bg:'#FDEAF3',ec:'#C42B6E',type:'Charity · South Westminster, SW1P',reg:'1050083',
+   projs:[{t:'Community Pantry Personal Shopper',ti:'Mon/Wed 11:30–15:30',d:'#C42B6E'},{t:'Young at Hearts (50+) Social Support',ti:'Mon/Wed 11:30–15:30',d:'#A05C0A'},{t:'Tech Buddies Digital Skills Tutor',ti:'2 hrs/week',d:'#1A5EA8'},{t:'Free Hot Meals Evening Volunteer',ti:'Tue/Thu evening',d:'#B84C2A'},{t:'ESOL Teaching Assistant',ti:'Half-day/week',d:'#0F7A5A'}]},
+];
+
+const CARDS = {
+  sukie:[
+    {org:'Magic Breakfast',em:'🥣',match:96,bg:'#FFF8EE',title:'Salesforce Setup for Food Bank',tags:['Remote','Food Poverty','Half-day'],tc:['ct-teal','ct-coral','ct-amber'],desc:"Configure a Nonprofit Cloud instance to manage 500+ school partners. Your 12 Salesforce certifications make you the first technical volunteer they've ever had.",time:'Sat 9:00–13:00 · Remote · 4 hrs',score:'Skills: 40/40 pts'},
+    {org:'Charityworks',em:'📊',match:89,bg:'#EEF4FF',title:'Data Literacy Workshop',tags:['In-person','Education','One-off'],tc:['ct-purp','ct-purp','ct-amber'],desc:'Run a 3-hour CRM data workshop for charity staff. Help them build dashboards and understand their impact data — a critical skill gap across most small London charities.',time:'Weekend · Central London · 3 hrs',score:'Borough: Westminster +20pts'},
+    {org:'Good Things Foundation',em:'💻',match:81,bg:'#EDFBF5',title:'Digital Inclusion Mentor',tags:['Hybrid','Digital Inclusion','Multi-session'],tc:['ct-teal','ct-purp','ct-amber'],desc:'Mentor 4 community members with limited digital skills over 4 sessions. Your Faithforce equality work is a perfect cultural fit for this audience.',time:'Flexible evenings · Hybrid · 8 hrs',score:'Flexibility bonus: +18pts'},
+  ],
+  eashwar:[
+    {org:'UnLtd',em:'🚀',match:94,bg:'#EDFBF5',title:'Growth Strategy Review',tags:['Remote','Social Enterprise','Half-day'],tc:['ct-teal','ct-purp','ct-amber'],desc:"Review a growth plan for an early-stage social enterprise. Scaling LtP from NGO to registered social enterprise in Botswana is the exact experience this needs.",time:'Flexible · Remote · 3 hrs',score:'Skills: 38/40 pts'},
+    {org:'New Philanthropy Capital',em:'📝',match:88,bg:'#EEFAFF',title:'Annual Report Copywriter',tags:['Remote','Impact','One-off'],tc:['ct-teal','ct-blue','ct-amber'],desc:"Write the narrative sections of their 2026 impact report. You authored LtP's first annual report and donation policy — a direct skills match for this task.",time:'Flexible · Remote · 4 hrs',score:'Skills: 36/40 pts'},
+    {org:'Street League',em:'⚽',match:79,bg:'#FFF8EE',title:'Fundraising Strategy Consultant',tags:['In-person','Health','Half-day'],tc:['ct-blue','ct-coral','ct-amber'],desc:'Map new donor segments and draft a refreshed 2027 fundraising strategy. Your government partnership experience across Southern Africa brings a perspective few London volunteers can offer.',time:'Weekend · London · 4 hrs',score:'Cross-sector: +14pts'},
+  ],
+  chelsea:[
+    {org:'Business in the Community',em:'📣',match:95,bg:'#EEFAFF',title:'ESG Communications Strategy',tags:['Remote','Corporate Impact','Half-day'],tc:['ct-teal','ct-blue','ct-amber'],desc:'Develop messaging frameworks for charities navigating ESG reporting. Your APCO Associate Director and Amazon Sr. Comms Manager background is a near-perfect match.',time:'Flexible · Remote · 3 hrs',score:'Skills: 39/40 pts'},
+    {org:'Media Trust',em:'🎙',match:91,bg:'#FFF8EE',title:'Media Relations Workshop',tags:['In-person','Education','One-off'],tc:['ct-blue','ct-purp','ct-amber'],desc:'Run a practical media pitching session for charity comms staff. 10 years at Edelman, APCO and Amazon — every scenario this audience faces, you have navigated.',time:'Sat morning · Central London · 3 hrs',score:'Borough: Westminster +20pts'},
+    {org:'Shelter',em:'🏠',match:83,bg:'#FFF0EE',title:'Impact Report Narrative Writer',tags:['Remote','Homelessness','One-off'],tc:['ct-teal','ct-coral','ct-amber'],desc:"Write the public narrative sections of Shelter's 2026 impact report. Your Rockefeller Foundation and UAE Office for Food Security comms experience is a strong fit.",time:'Flexible · Remote · 4 hrs',score:'Skills: 35/40 pts'},
+  ],
+  nicole:[
+    {org:'Refugee Council',em:'🤝',match:97,bg:'#EDFBF5',title:'ECHO Grant Proposal Reviewer',tags:['Remote','Refugees','One-off'],tc:['ct-teal','ct-blue','ct-amber'],desc:"Review and strengthen a draft ECHO proposal before submission. Your Plan International Ireland work — securing €15M+ from INTPA and ECHO — is essentially the role description.",time:'Flexible · Remote · 3 hrs',score:'Skills: 40/40 pts'},
+    {org:'Oxfam GB',em:'🌐',match:91,bg:'#FFF8EE',title:'EU & UN Donor Mapping Workshop',tags:['Remote','Humanitarian','Half-day'],tc:['ct-teal','ct-coral','ct-amber'],desc:'Facilitate a 3-hour workshop helping a small London humanitarian CIC map EU/UN donor landscapes. Your GOAL and Plan International donor pipeline experience is directly applicable.',time:'Weekday evening · Remote · 3 hrs',score:'Skills: 38/40 pts'},
+    {org:'Save the Children UK',em:'📋',match:85,bg:'#EEFAFF',title:'Donor Reporting Narrative Review',tags:['Remote',"Children's Rights",'One-off'],tc:['ct-teal','ct-purp','ct-amber'],desc:"Review donor reporting narrative for compliance and impact clarity. You managed an ~$85M portfolio in Yemen as primary donor liaison for ECHO, UNICEF, and OCHA.",time:'Flexible · Remote · 2 hrs',score:'Skills: 36/40 pts'},
+  ],
+};
+
+const VDATA = {
+  sukie:{av:'SG',bg:'#EEEDF9',c:'#4B45B5',name:'Sukie Gandhi',role:'Manager, Salesforce · LSE ExMSc',skills:['Salesforce CRM','Data Cloud','Technical Training','Analytics','DEI'],avail:['Weekends','Remote OK','2–5 hrs/month'],bio:'12× Salesforce Certified. EVP Faithforce Global. Rare technical expertise for the charity sector.'},
+  eashwar:{av:'ER',bg:'#E8F7F2',c:'#0F7A5A',name:'Eashwar Ramesh',role:'Co-founder/COO, Learn To Play · LSE ExMSc',skills:['Strategy & Growth','Fundraising','Social Enterprise','Impact Reporting','Stakeholder Mgmt'],avail:['Flexible','In-person OK','Remote OK','6–10 hrs/month'],bio:"Co-founded LtP in Botswana — scaled NGO to social enterprise. Wrote first annual report. Deep government partnership experience."},
+  chelsea:{av:'CR',bg:'#FDEAE4',c:'#B84C2A',name:'Chelsea Roth',role:'Investor Relations, GBM Securities · LSE MSc',skills:['PR & Strategic Comms','ESG & Social Impact','Copywriting','Media Relations','Corporate Affairs'],avail:['Weekday evenings','Weekend mornings','Remote OK','2–5 hrs/month'],bio:"10 years at Edelman, APCO, Amazon. Clients: Unilever, ACLU, Rockefeller Foundation. Expert in ESG narrative."},
+  nicole:{av:'NH',bg:'#FEF0D8',c:'#A05C0A',name:'Nicole Heimberg',role:'Business Dev Manager, Plan International Ukraine',skills:['Grant Writing','Humanitarian Fundraising','EU/UN Donor Relations','Programme Design','Impact Reporting'],avail:['Weekday evenings','Remote OK','2–5 hrs/month'],bio:'14+ years leading BD for Plan International, Save the Children Yemen ($85M), GOAL Iraq. Secured €15M+ from INTPA/ECHO/UN.'},
+};
+
+let activeVol = 'sukie', cardIdx = 0;
+let isDragging = false, startX = 0, curX = 0;
+let sparkTyping = false;
+
+// ══════════════ NAV ══════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  const m = {home:0,swipe:1,'volley-back':2,orgs:3,spark:4,impact:5};
+  if (m[id] !== undefined) {
+    const pills = document.querySelectorAll('.nav-pill');
+    if (pills[m[id]]) pills[m[id]].classList.add('active');
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+  if (id === 'swipe') renderCards();
+  if (id === 'orgs') renderOrgs();
+}
+
+// ══════════════ VOLUNTEER SWITCHER ══════════════
+function setVol(v) {
+  activeVol = v; cardIdx = 0;
+  document.querySelectorAll('.vtab').forEach(t => t.classList.remove('active'));
+  document.getElementById('vt-' + v).classList.add('active');
+  renderCards(); renderProf();
+}
+
+// ══════════════ CARDS ══════════════
+function renderCards() {
+  const stack = document.getElementById('cstack');
+  if (!stack) return;
+  stack.innerHTML = '';
+  const cards = CARDS[activeVol] || [];
+  const vis = cards.slice(cardIdx, cardIdx + 3);
+  if (!vis.length) {
+    stack.innerHTML = '<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;color:var(--mid)"><div style="font-size:3rem;margin-bottom:1rem">✓</div><div style="font-weight:800;color:var(--ink);font-size:1.1rem;margin-bottom:.5rem">All caught up!</div><div style="font-size:.85rem;line-height:1.6">Switch volunteer to see more,<br>or browse the Charities tab.</div></div>';
+    return;
+  }
+  [...vis].reverse().forEach((card, i) => {
+    const el = document.createElement('div');
+    const cls = ['c1','c2','c3'][vis.length - 1 - i];
+    el.className = 'scard ' + cls;
+    el.innerHTML =
+      '<div class="stamp-like">Apply ✓</div>' +
+      '<div class="stamp-nope">Pass ✕</div>' +
+      '<div class="card-img-area" style="background:' + card.bg + '">' +
+        '<span style="font-size:4.5rem;line-height:1">' + card.em + '</span>' +
+        '<div class="card-badge-match">' + card.match + '% match</div>' +
+        '<div class="card-badge-cc">✓ CC Verified</div>' +
+      '</div>' +
+      '<div class="card-body">' +
+        '<div class="ctags">' + card.tags.map((t,ti) => '<span class="ctag ' + card.tc[ti] + '">' + t + '</span>').join('') + '</div>' +
+        '<div class="card-title">' + card.title + '</div>' +
+        '<div class="card-org"><span class="org-pip"></span>' + card.org + '</div>' +
+        '<div class="card-desc">' + card.desc + '</div>' +
+      '</div>' +
+      '<div class="card-footer"><div class="cf-l">' + card.time + '</div><div class="cf-r">' + card.score + '</div></div>';
+    if (cls === 'c1') addDrag(el);
+    stack.appendChild(el);
+  });
+  renderProf();
+}
+
+function renderProf() {
+  const p = VDATA[activeVol];
+  const pstrip = document.getElementById('pstrip');
+  if (!pstrip) return;
+  pstrip.innerHTML =
+    '<div class="pstrip-top">' +
+      '<div class="pstrip-av" style="background:' + p.bg + ';color:' + p.c + '">' + p.av + '</div>' +
+      '<div><div style="font-weight:700;font-size:.85rem">' + p.name + '</div><div style="font-size:.7rem;color:var(--mid)">' + p.role + '</div></div>' +
+    '</div>' +
+    '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px">' + p.skills.map(s => '<span class="pill-sm pill-mist">' + s + '</span>').join('') + '</div>' +
+    '<div style="display:flex;flex-wrap:wrap;gap:4px">' + p.avail.map(a => '<span class="pill-sm pill-teal">' + a + '</span>').join('') + '</div>';
+}
+
+// One-time global drag handlers
+let _dragEl = null, _likeStamp = null, _nopeStamp = null;
+document.addEventListener('mousemove', e => {
+  if (!isDragging || !_dragEl) return;
+  curX = e.clientX - startX;
+  _dragEl.style.transform = 'translateX(' + curX + 'px) rotate(' + (curX * 0.035) + 'deg)';
+  if (_likeStamp) _likeStamp.style.opacity = curX > 20 ? Math.min((curX - 20) / 60, 1) : 0;
+  if (_nopeStamp) _nopeStamp.style.opacity = curX < -20 ? Math.min((-curX - 20) / 60, 1) : 0;
+});
+document.addEventListener('mouseup', () => {
+  if (!isDragging || !_dragEl) return;
+  isDragging = false; _dragEl.style.transition = '';
+  if (_likeStamp) _likeStamp.style.opacity = 0;
+  if (_nopeStamp) _nopeStamp.style.opacity = 0;
+  if (curX > 80) doSwipe('right');
+  else if (curX < -80) doSwipe('left');
+  else _dragEl.style.transform = '';
+  curX = 0; _dragEl = null;
+});
+document.addEventListener('touchmove', e => {
+  if (!isDragging || !_dragEl) return;
+  curX = e.touches[0].clientX - startX;
+  _dragEl.style.transform = 'translateX(' + curX + 'px) rotate(' + (curX * 0.035) + 'deg)';
+  if (_likeStamp) _likeStamp.style.opacity = curX > 20 ? Math.min((curX - 20) / 60, 1) : 0;
+  if (_nopeStamp) _nopeStamp.style.opacity = curX < -20 ? Math.min((-curX - 20) / 60, 1) : 0;
+}, {passive:true});
+document.addEventListener('touchend', () => {
+  if (!isDragging || !_dragEl) return;
+  isDragging = false; _dragEl.style.transition = '';
+  if (_likeStamp) _likeStamp.style.opacity = 0;
+  if (_nopeStamp) _nopeStamp.style.opacity = 0;
+  if (curX > 60) doSwipe('right');
+  else if (curX < -60) doSwipe('left');
+  else _dragEl.style.transform = '';
+  curX = 0; _dragEl = null;
+});
+
+function addDrag(el) {
+  const likeStamp = el.querySelector('.stamp-like');
+  const nopeStamp = el.querySelector('.stamp-nope');
+  el.addEventListener('mousedown', e => {
+    isDragging = true; startX = e.clientX;
+    _dragEl = el; _likeStamp = likeStamp; _nopeStamp = nopeStamp;
+    el.style.transition = 'none';
+  });
+  el.addEventListener('touchstart', e => {
+    isDragging = true; startX = e.touches[0].clientX;
+    _dragEl = el; _likeStamp = likeStamp; _nopeStamp = nopeStamp;
+    el.style.transition = 'none';
+  }, {passive:true});
+}
+
+function doSwipe(dir) {
+  const stack = document.getElementById('cstack');
+  const top = stack.querySelector('.c1');
+  if (!top) return;
+  const card = (CARDS[activeVol] || [])[cardIdx];
+  if (dir === 'right' || dir === 'super') {
+    top.classList.add('go-right');
+    setTimeout(() => { cardIdx++; renderCards(); showApplied(card, dir === 'super'); }, 380);
+  } else {
+    top.classList.add('go-left');
+    setTimeout(() => { cardIdx++; renderCards(); showToast('Passed'); }, 380);
+  }
+}
+
+function showApplied(card, isSuper) {
+  document.getElementById('ov-emoji').textContent = isSuper ? '⚡' : '🎉';
+  document.getElementById('ov-title').textContent = isSuper ? 'Super Applied!' : 'Applied!';
+  document.getElementById('ov-sub').innerHTML = isSuper
+    ? 'Priority application to <strong>' + card.org + '</strong> for <em>' + card.title + '</em> confirmed. You\'ve been flagged to this org via The Volley — they\'ll receive a ping within 60 seconds.'
+    : 'Application to <strong>' + card.org + '</strong> for <em>' + card.title + '</em> confirmed. Volunteer Hours record created in Salesforce. The org has been notified.';
+  document.getElementById('ov').classList.add('open');
+}
+function closeOv() { document.getElementById('ov').classList.remove('open'); }
+
+function showToast(m) {
+  const t = document.getElementById('toast');
+  t.textContent = m; t.classList.add('on');
+  setTimeout(() => t.classList.remove('on'), 1800);
+}
+
+// ══════════════ THE VOLLEY — org notifications ══════════════
+function volleyBack(btn, org) {
+  const card = btn.closest('.notif-card');
+  card.style.opacity = '0.5';
+  card.style.pointerEvents = 'none';
+  const actions = card.querySelector('.notif-actions');
+  actions.innerHTML = '<span style="font-size:.78rem;font-weight:700;color:var(--teal)">✓ Vollied back! Volunteer Hours record created in Salesforce · You\'ll hear back within 24 hrs</span>';
+  showToast('↔ Vollied back to ' + org + '!');
+}
+
+// ══════════════ ORGS ══════════════
+function renderOrgs() {
+  const g = document.getElementById('orgs-grid');
+  if (!g || g.innerHTML !== '') return;
+  g.innerHTML = ORGS.map(o =>
+    '<div class="org-card">' +
+      '<div class="org-hdr">' +
+        '<div class="org-em" style="background:' + o.bg + ';color:' + o.ec + '">' + o.em + '</div>' +
+        '<div><div class="org-n">' + o.name + '</div><div class="org-t">' + o.type + '</div><div class="org-v">✓ CC Reg: ' + o.reg + '</div></div>' +
+      '</div>' +
+      '<div class="org-projs">' +
+        o.projs.map(p =>
+          '<div class="proj-r" onclick="showScreen(\'swipe\')">' +
+            '<div class="proj-pip" style="background:' + p.d + '"></div>' +
+            '<div class="proj-n">' + p.t + '</div>' +
+            '<div class="proj-t">' + p.ti + '</div>' +
+          '</div>'
+        ).join('') +
+      '</div>' +
+    '</div>'
+  ).join('');
+}
+
+// ══════════════ SPARK AI ══════════════
+const SR = {
+  schedule: v => 'You\'re not alone — <strong>\"I can\'t find the time\"</strong> was the single most common write-in across all 67 survey responses. Here\'s how Volley tackles it:<br><br><strong>1. Time-bound roles only.</strong> Every role has a defined end point — half-day, one-off, or a set number of sessions. No open-ended commitments.<br><br><strong>2. Availability matching.</strong> Set your actual free slots in your profile — weekday evenings, Saturday mornings, flexible. The Apex engine only surfaces roles that fit those exact windows.<br><br><strong>3. The Volley ping.</strong> You don\'t have to hunt. When a role opens that fits ' + VDATA[v].name + '\'s availability, the charity pings you directly. One tap to apply. The smallest roles on Volley start at 2 hours — Re-Engage\'s Call Companion is 30 minutes, twice a month, from home.',
+
+  findopps: v => '<strong>47 out of 67 respondents</strong> said flexible, short-term modular opportunities would most get them volunteering more — but they couldn\'t find them. Multiple Q3 write-ins: <em>\"No easy steps\"</em>, <em>\"Lots of manual effort\"</em>, <em>\"Not aware of activities in my area.\"</em><br><br><strong>One inbox, not twelve tabs.</strong> Volley consolidates verified London charities in one place. Roles are pre-scoped so you can see exactly what\'s needed before you click.<br><br><strong>Skill-first matching.</strong> For ' + VDATA[v].name + ', the engine knows your top skills are ' + VDATA[v].skills.slice(0,2).join(' and ') + '. It scores every role against that profile — you\'re not browsing blind, you\'re getting ranked recommendations.<br><br><strong>The Volley notification.</strong> One survey respondent wrote: <em>\"I usually only hear about opportunities when friends or family tell me.\"</em> The Volley flips that — charities proactively reach you when a role fits.',
+
+  skills: v => 'This came up two ways in our survey data:<br><br>• <strong>19 respondents: skills underutilised</strong> — showed up with real expertise and got a generic task.<br>• <strong>24 respondents: work felt disconnected from meaningful impact.</strong><br><br>Both have the same root: poor matching. Volley fixes this at the data model level:<br><br>Every role stores required skills in <code>OpportunitySkill__c</code> with mandatory vs. nice-to-have flags. ' + VDATA[v].name + '\'s skills (' + VDATA[v].skills.slice(0,3).join(', ') + ') are stored in <code>VolunteerSkill__c</code> with proficiency levels. The matching engine scores <strong>40/100 points on skill overlap alone</strong>. Mandatory skills not met = role never shown.<br><br>One Q14 respondent wrote: <em>\"If there were opportunities where you could actually connect with people you\'re helping and see your impact first-hand, it would be a lot more fulfilling.\"</em> That\'s why every role on Volley has a clear ImpactDescription — you read exactly what you\'ll achieve before applying.',
+
+  applications: v => '19 respondents cited complicated applications or lengthy email chains as a barrier. Q3 write-ins echoed it: <em>\"Hard to get connected, no easy steps\"</em> and <em>\"Lots of manual effort to know how/where to get involved.\"</em><br><br><strong>Volley\'s answer: apply in one tap.</strong> Swipe right or tap ✓. A Salesforce Flow creates your Volunteer Hours record instantly, emails confirmation with the task brief, and notifies the org with your skill profile — all automatic, no forms.<br><br><strong>No email chains.</strong> All communication goes through the platform. The org sees your skills and availability. You see the role brief and task detail. No back-and-forth to schedule a call just to find out what the role involves.<br><br>35 respondents (Q7) said faster, simpler digital onboarding would make them more likely to commit. That\'s the second most requested improvement in the entire survey.',
+
+  trust: v => 'Trust was the third and fifth most cited barrier:<br>• <strong>25 respondents: lack of visibility into credible charities</strong><br>• <strong>23 respondents: difficulty assessing if an org is effective or trustworthy</strong><br><br>Volley solves this with a two-step process before any org can post:<br><br><strong>Step 1 — Charity Commission API check.</strong> An Apex callout goes to <code>api.charitycommission.gov.uk</code> the moment an org registers. The system confirms their registration status is \"Registered\" and stores the full JSON in <code>Verification__c</code> for audit.<br><br><strong>Step 2 — Volley compliance staff sign-off.</strong> A human reviewer checks the safeguarding policy upload and primary contact. Only then does the ✓ CC Verified badge appear.<br><br>Every organisation ' + VDATA[v].name + ' sees on Volley has passed both steps. The green badge is backed by an actual government API record, not self-certification.',
+
+  ghosted: v => 'This came up hard in our data: <strong>21 respondents experienced unclear expectations or poorly defined roles</strong>, and <strong>18 experienced poor communication or delayed onboarding</strong> after already signing up. Getting ghosted after signing up is one of the most demoralising volunteer experiences.<br><br><strong>Instant confirmation.</strong> The moment you apply, a Salesforce Flow creates your Volunteer Hours record and emails you confirmation with the full task brief — before any human at the charity has to act.<br><br><strong>Both sides get notified simultaneously.</strong> The org sees your skills summary and your application status in their Salesforce dashboard. They can\'t \"forget\" about you.<br><br><strong>Mutual feedback closes the loop.</strong> After the task, a Scheduled Flow sends feedback surveys to both you and the org. Charities with poor communication patterns get flagged and their scores affect future matching.<br><br><strong>The Volley enables direct messaging.</strong> If the org wants to send you a brief before your session, they can message through the platform. No more checking spam for an email that never came.',
+
+  workload: v => 'Several survey respondents were direct: <em>\"I\'m working multiple jobs to make a living\"</em>, <em>\"work is too much\"</em>, <em>\"time commitment is too uncertain.\"</em><br><br>Volley won\'t pretend it can solve time poverty — but it can remove the <em>overhead</em> of volunteering so the time you do have goes entirely to impact, not admin.<br><br><strong>What Volley removes from the equation:</strong><br>• Searching across multiple websites (saves 30–60 mins per search)<br>• Back-and-forth emails to understand a role (saves hours)<br>• Showing up to find the role wasn\'t what was described (saves the whole day)<br>• Onboarding paperwork for a 2-hour task (removed entirely for basic roles)<br><br>One Q3 respondent: <em>\"I need to find opportunities at the last minute and more spontaneously.\"</em> The Volley ping was designed exactly for that — when you have a free Saturday morning, there\'s already a matched role waiting.',
+
+  pinged: v => 'Hackney Migrant Centre posted a new Salesforce setup role. The VolleyMatchingService ran automatically and scored <strong>' + VDATA[v].name + '</strong> at 96/100 — the highest in the current volunteer pool. Because you\'ve starred them as a favourite charity, a Priority VolleyPing__c record was created and an urgent notification fired within 60 seconds of the role going live.',
+  volley: () => 'The Volley is the key innovation that makes Volley different. On most platforms, communication is one-directional — you browse, you apply. The Volley adds the return path.<br><br>When an org posts a role, the VolleyMatchingService scores all volunteers. Score ≥80 = VolleyPing sent. Premium orgs can also send one personalised message. You respond with one tap — "Volley Back" — which creates your Volunteer Hours record and closes the ping.<br><br>It\'s named after the volleyball rally: energy and intent moving both ways across the net.',
+  reengage: () => '<strong>Re-Engage</strong> is the UK\'s only national charity solely dedicated to tackling loneliness among people aged 75+. In 2024–25, 6,600+ older people were supported by 7,600+ volunteers.<br><br>Their <strong>Call Companion</strong> role (30 mins, twice a month, by phone) is Volley\'s most time-flexible option — done from anywhere, any time. Rainbow Call Companions serves LGBT+ elders. Monthly tea parties and activity groups also available.',
+  after: () => 'After you Volley Back: (1) Volunteer Hours record created with ApplicationStatus = Confirmed. (2) Confirmation email with the full task brief. (3) Org notified with your skill summary. (4) VolleyPing__c updated to Accepted. (5) On completion, a Scheduled Flow sends feedback surveys to both you and the org — both ratings matter.',
+  verify: () => 'Two steps, both required. First, an Apex callout to the Charity Commission REST API validates the registration number — the full JSON is stored in Verification__c for audit. If the API passes, Volley compliance staff sign off manually. Annual re-verification runs automatically via Scheduled Flow. <strong>No AI involved in any verification decision.</strong>',
+  hmc: () => '<strong>Hackney Migrant Centre</strong> provides expert legal advice and practical support for migrants, refugees, and asylum seekers in Hackney (E8). 60+ dedicated volunteers. On Wednesdays, 40–60 visitors come for a hot meal and wellbeing activities. Five projects: immigration casework, Wednesday meals, digital onboarding, eVisa setup, and fundraising copy.',
+  default: v => 'Looking at ' + VDATA[v].name + '\'s profile, your strongest opportunities align on ' + VDATA[v].skills.slice(0,2).join(' and ') + '. The Volley has already sent you one Priority ping from a favourite charity this session. I can also walk through any of the pain points raised in our volunteer survey — time, trust, skill mismatch, ghosted applications, or finding the right opportunity. What would help most?',
+};
+
+function sparkSay(q) { document.getElementById('cinp').value = q; sendSpark(); }
+
+function sendSpark() {
+  const inp = document.getElementById('cinp');
+  const q = inp.value.trim();
+  if (!q || sparkTyping) return;
+  inp.value = '';
+  addCMsg(q, 'u');
+  const sr = document.getElementById('sugg-row'); if(sr) sr.style.display = 'none';
+  sparkTyping = true;
+  const typing = document.createElement('div');
+  typing.className = 'cm cm-s';
+  typing.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+  const _smel = document.getElementById('smsgs'); if (_smel) { _smel.appendChild(typing); _smel.scrollTop = _smel.scrollHeight; }
+  setTimeout(() => {
+    typing.remove();
+    addCMsg(getReply(q.toLowerCase()), 's');
+    sparkTyping = false;
+  }, 900 + Math.random() * 500);
+}
+
+function addCMsg(text, who) {
+  const d = document.createElement('div');
+  d.className = 'cm cm-' + who;
+  d.innerHTML = '<div class="bbl">' + text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') + '</div><div class="cm-ts">Just now</div>';
+  const sm = document.getElementById('smsgs'); if (!sm) return; sm.appendChild(d); sm.scrollTop = sm.scrollHeight;
+}
+
+function getReply(q) {
+  // Survey pain-point routes — grounded in Q3/Q4/Q6 real responses
+  if (q.includes('schedul') || (q.includes('time') && !q.includes('real')) || q.includes('busy') || q.includes('fit') || q.includes('evenings') || q.includes('weekend') || q.includes('free time') || q.includes('available') || q.includes('routine')) return SR.schedule(activeVol);
+  if ((q.includes('find') || q.includes('look') || q.includes('search') || q.includes('where') || q.includes('aware') || q.includes('know')) && (q.includes('opport') || q.includes('role') || q.includes('volunt'))) return SR.findopps(activeVol);
+  if (q.includes('skill') && (q.includes('wast') || q.includes('under') || q.includes('mismat') || q.includes('not used') || q.includes('disconnect') || q.includes('impact') || q.includes('generic'))) return SR.skills(activeVol);
+  if (q.includes('applicat') || q.includes('complic') || q.includes('email') || q.includes('slow') || q.includes('onboard') || q.includes('friction') || q.includes('manual') || q.includes('effort') || q.includes('form') || q.includes('steps')) return SR.applications(activeVol);
+  if (q.includes('trust') || q.includes('legit') || q.includes('verif') || q.includes('credib') || q.includes('charity commission') || q.includes('reliable') || q.includes('safe') || q.includes('scam') || q.includes('effective')) return SR.trust(activeVol);
+  if (q.includes('ghost') || q.includes('never heard') || q.includes('signed up') || q.includes('no reply') || q.includes('communicat') || q.includes('response') || q.includes('expectat') || q.includes('unclear') || q.includes('delayed')) return SR.ghosted(activeVol);
+  if ((q.includes('work') && (q.includes('multiple') || q.includes('job') || q.includes('takes') || q.includes('financ') || q.includes('living') || q.includes('bandwidth') || q.includes('everything'))) || q.includes('overloaded') || q.includes('no bandwidth')) return SR.workload(activeVol);
+  if (q.includes('ping') || q.includes('pinged') || q.includes('notification') || q.includes('alert')) return SR.pinged(activeVol);
+  if (q.includes('volley') && (q.includes('work') || q.includes('feature') || q.includes('two') || q.includes('both') || q.includes('how') || q.includes('back'))) return SR.volley();
+  if (q.includes('re-engage') || q.includes('reengage') || q.includes('befriend') || q.includes('elderly') || q.includes('older')) return SR.reengage();
+  if (q.includes('after') || q.includes('volley back') || q.includes('accept') || q.includes('confirm')) return SR.after();
+  if (q.includes('verif') || q.includes('charity commission') || q.includes('check')) return SR.verify();
+  if (q.includes('hackney') || q.includes('migrant') || q.includes('hmc')) return SR.hmc();
+  if (q.includes('groundwork') || q.includes('garden') || q.includes('environment')) return 'Groundwork London runs environmental volunteering, food-growing, and youth coaching. Community Garden Days are full-day in-person commitments. The <strong>Green Community Grants Writer</strong> role (4 hrs, remote) suits anyone with proposal or comms skills. They had 132 volunteers deliver 1,308 hours in one borough last year.';
+  if (q.includes('kids network') || q.includes('mentor') || q.includes('children')) return 'The Kids Network pairs volunteers with children aged 8–11 for a 12-month mentoring programme (1–3 hrs/week). <strong>100% of children reported increased wellbeing.</strong> They especially need male volunteers from the Global Majority. There\'s also a 2-hour remote data analysis role if you prefer non-contact volunteering. DBS required for mentoring.';
+  if (q.includes('abbey') || q.includes('westminster') || q.includes('pantry')) return 'Abbey Community Centre is a vibrant hub in south Westminster serving 50,000+ local residents. Community Pantry, ESOL teaching, Tech Buddies, and free hot meals programmes all need regular volunteers. Monday and Wednesday daytime slots. Corporate CSR days welcome — several government departments already volunteer there.';
+  if (q.includes('rspca') || q.includes('animal')) return 'RSPCA Central London (founded 1824). Volunteer roles: animal rescue transport (4–6 hrs/shift), wildlife photography for rehoming (2 hrs, flexible), fundraising events. Photography and social media roles are ideal for creative volunteers wanting animal welfare experience without hands-on care.';
+  if (q.includes('dbs') || q.includes('safeguard')) return 'DBS checks are required for direct contact with children or vulnerable adults — e.g. The Kids Network (Enhanced DBS) or Re-Engage befriending (Basic DBS). Status stored in Contact.DBSStatus__c, visible only to Volley\'s safeguarding team and the specific org once confirmed. Never exposed to other volunteers or Spark.';
+  if (q.includes('match') && (q.includes('score') || q.includes('how') || q.includes('calculat'))) return 'Match scores calculated across 4 dimensions: <strong>Skills overlap (40 pts)</strong> — mandatory skills met, nice-to-haves as bonus. <strong>Availability (25 pts)</strong> — your slots vs shift times. <strong>Borough proximity (20 pts)</strong> — exact match scores highest; remote scores 15. <strong>Feedback signal (15 pts)</strong> — high past feedback boosts similar orgs. Roles below their MatchThreshold__c (default 80) are never shown. The Volley only fires for scores ≥80.';
+  return SR.default(activeVol);
+}
+
+// ══════════════ INIT ══════════════
+// Cards rendered on demand via showScreen()
+</script>
+</body>
+</html>
