@@ -227,6 +227,45 @@ main{padding-top:var(--nav-h);min-height:100vh}
 .vball-arrow{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--spark)}
 .vball-arrow svg{width:28px;height:28px}
 .vball-arrow-lbl{font-size:.58rem;opacity:.6;text-transform:uppercase;letter-spacing:.06em}
+
+/* ── THE VOLLEY: responsive connection card ───────────────────── */
+.vb-connection{
+  width:min(100%,430px);margin:0 auto;display:grid;
+  grid-template-columns:1fr;
+  align-items:center;gap:.65rem;
+}
+.vb-person-card{
+  background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.24);
+  border-radius:18px;padding:1.05rem 1.15rem;text-align:left;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 30px rgba(0,0,0,.08);
+  min-width:0;
+}
+.vb-card-label{
+  font-size:.58rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase;
+  color:rgba(255,255,255,.56);margin-bottom:.42rem;
+}
+.vb-card-title{
+  font-weight:900;font-size:1.08rem;color:white;line-height:1.15;
+  letter-spacing:-.02em;margin-bottom:.28rem;
+}
+.vb-card-meta{font-size:.74rem;color:rgba(255,255,255,.72);line-height:1.35}
+.vb-connector{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;color:var(--spark);min-width:70px;
+}
+.vb-connector-line{
+  display:block;width:2px;height:18px;border-radius:999px;
+  background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,.44),rgba(255,255,255,0));
+}
+.vb-connector-ball{
+  width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);
+  color:white;font-weight:900;font-size:1rem;line-height:1;
+}
+.vb-connector-label{
+  font-size:.55rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase;
+  color:rgba(255,255,255,.55);text-align:center;white-space:nowrap;
+}
 .notif-feed{display:flex;flex-direction:column;gap:10px;margin-bottom:1.75rem}
 .notif-card{background:white;border:1px solid var(--border);border-radius:var(--r);padding:.9rem 1.1rem;box-shadow:var(--s1);position:relative;overflow:hidden;display:flex;gap:10px;align-items:flex-start;cursor:pointer;transition:all .18s}
 .notif-card:hover{box-shadow:var(--s2);transform:translateY(-1px)}
@@ -1010,6 +1049,15 @@ footer{background:var(--teal-d);color:rgba(255,255,255,.45);text-align:center;pa
   .vb-hero h2{font-size:clamp(2rem,10vw,2.8rem);line-height:1.05;letter-spacing:-.045em;margin-bottom:.8rem}
   .vb-hero p{font-size:1.02rem;line-height:1.65;opacity:.78;margin-bottom:1.4rem}
   .vball-diagram{gap:.7rem;flex-direction:column}.vball-side{width:100%;padding:1rem}.vball-arrow{transform:rotate(90deg);height:48px}.vball-arrow-lbl{display:none}
+  .vb-connection{grid-template-columns:1fr;gap:.65rem;width:100%;max-width:390px;margin:0 auto}
+  .vb-person-card{width:100%;padding:1rem 1.1rem;text-align:left;border-radius:18px;background:rgba(255,255,255,.14)}
+  .vb-card-label{font-size:.6rem;margin-bottom:.35rem}
+  .vb-card-title{font-size:1.12rem}
+  .vb-card-meta{font-size:.8rem;line-height:1.4}
+  .vb-connector{min-height:64px;gap:5px}
+  .vb-connector-line{width:2px;height:18px;background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,.42),rgba(255,255,255,0))}
+  .vb-connector-ball{width:34px;height:34px;font-size:.95rem}
+  .vb-connector-label{font-size:.56rem}
   .notif-card{border-radius:18px;padding:.85rem .9rem;gap:9px}.notif-icon{width:36px;height:36px}.notif-from{font-size:.82rem}.notif-msg{font-size:.8rem;line-height:1.5}.notif-actions{display:grid;grid-template-columns:1fr;gap:6px}.notif-btn{width:100%;padding:9px 12px;font-size:.75rem}
   .chr-vb-tabs,.chr-soc-tabs,.social-tabs{overflow-x:auto;gap:6px;padding-bottom:4px;scrollbar-width:none}.chr-vb-tab,.chr-soc-tab,.social-tab{white-space:nowrap;flex:0 0 auto;padding:9px 12px}
 
@@ -1291,20 +1339,24 @@ footer{background:var(--teal-d);color:rgba(255,255,255,.45);text-align:center;pa
       </div>
       <h2 style="font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900;color:white;margin-bottom:1rem;line-height:1.15">Volunteering travels<br>in both directions</h2>
       <p style="font-size:.9rem;color:rgba(255,255,255,.82);max-width:520px;margin:0 auto 2rem;line-height:1.65">Just like a volleyball &#8212; energy moves both ways across the net. When a role that fits your skills opens at a charity you care about, they can ping you directly. You volley back with one tap.</p>
-      <div style="display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap">
-        <div style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:1.1rem 1.4rem;min-width:160px;text-align:center">
-          <div style="font-size:.58rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:.4rem">Volunteer</div>
-          <div style="font-weight:800;font-size:1rem;color:white;margin-bottom:.25rem" id="vb-vol-name">Sukie Gandhi</div>
-          <div style="font-size:.72rem;color:rgba(255,255,255,.65)" id="vb-vol-skill">12× Salesforce Certified</div>
+      <div class="vb-connection" aria-label="Volunteer and charity Volley connection">
+        <div class="vb-person-card vb-person-card-vol">
+          <div class="vb-card-label">Volunteer</div>
+          <div class="vb-card-title" id="vb-vol-name">Chelsea Roth</div>
+          <div class="vb-card-meta" id="vb-vol-skill">ESG &amp; Strategic Comms &#183; PR and Charity</div>
         </div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-          <svg width="48" height="28" viewBox="0 0 100 56" fill="none"><path d="M10 50 Q50 5 90 50" stroke="rgba(255,255,255,.45)" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="10" cy="50" r="5" fill="rgba(255,255,255,.4)"/><circle cx="90" cy="50" r="5" fill="rgba(255,255,255,.4)"/></svg>
-          <div style="font-size:.55rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45)">THE VOLLEY</div>
+
+        <div class="vb-connector" aria-label="The Volley connection">
+          <span class="vb-connector-line" aria-hidden="true"></span>
+          <span class="vb-connector-ball" aria-hidden="true">&#8596;</span>
+          <span class="vb-connector-line" aria-hidden="true"></span>
+          <div class="vb-connector-label">The Volley</div>
         </div>
-        <div style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:1.1rem 1.4rem;min-width:160px;text-align:center">
-          <div style="font-size:.58rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:.4rem">Charity</div>
-          <div style="font-weight:800;font-size:1rem;color:white;margin-bottom:.25rem">The Kids Network</div>
-          <div style="font-size:.72rem;color:rgba(255,255,255,.65)">Reg. Charity &#183; CC Verified</div>
+
+        <div class="vb-person-card vb-person-card-charity">
+          <div class="vb-card-label">Charity</div>
+          <div class="vb-card-title" id="vb-charity-name">The Kids Network</div>
+          <div class="vb-card-meta" id="vb-charity-meta">Reg. Charity &#183; CC Verified</div>
         </div>
       </div>
     </div>
@@ -2950,7 +3002,7 @@ var VOLLEY_DATA = {
   },
   chelsea: {
     name: 'Chelsea Roth',
-    skill: 'ESG & Strategic Comms · PR',
+    skill: 'ESG & Strategic Comms · PR and Charity',
     
     unread: 3,
     notifs: [
