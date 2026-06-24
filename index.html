@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Volley — Skill up · Show up · Fly</title>
+<title>Volley — Skill up · Show up · Soar</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 :root {
@@ -943,6 +943,10 @@ body.charity-view .charity-only{display:inline-flex !important}
 .vs-side:not(.vol-active):not(.chr-active){opacity:.7}
 .vs-side:hover{opacity:1}
 
+.vs-select{min-height:32px}
+.vs-side{min-height:40px}
+@media (max-width:768px){.vs-select{min-height:38px}.vs-side{min-height:46px}}
+
 .nav-badge{display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;border-radius:100px;background:var(--coral);color:white;font-size:.58rem;font-weight:800;margin-left:4px;padding:0 4px;vertical-align:middle}
 .card-detail-strip{display:flex;flex-wrap:wrap;align-items:center;gap:5px;padding:.5rem .9rem;background:var(--cream);border-top:1px solid var(--border);font-size:.68rem;color:var(--mid)}
 .cds-pill{border-radius:100px;padding:2px 8px;font-size:.62rem;font-weight:700;flex-shrink:0}
@@ -955,6 +959,73 @@ body.charity-view .charity-only{display:inline-flex !important}
 .notif-sdg-pill{font-size:.58rem;font-weight:700;background:var(--teal-xl);color:var(--teal-d);border-radius:100px;padding:2px 7px}
 
 footer{background:var(--teal-d);color:rgba(255,255,255,.45);text-align:center;padding:1.25rem;font-size:.7rem;margin-top:2.5rem}
+
+/* QA pass: The top selector is the single source of truth, so hide the duplicate inbox selector on The Volley page. */
+#screen-volley-back .vb-vol-selector{display:none !important}
+
+
+/* ── MOBILE QA / READABILITY PASS ─────────────────────────────── */
+@media (max-width: 768px){
+  :root{--nav-h:106px;--tab-h:70px}
+  html{font-size:16px}
+  body{padding-bottom:calc(var(--tab-h) + env(safe-area-inset-bottom,0px));}
+  .top-nav{min-height:var(--nav-h);padding:.65rem 1rem .75rem;align-items:center;gap:.7rem;flex-wrap:wrap;justify-content:flex-start}
+  .nav-logo{width:auto;min-width:120px;gap:8px}
+  .nav-logo img,.nav-logo svg{width:30px!important;height:30px!important}
+  .nav-wordmark{font-size:1rem;font-weight:900}
+  .view-switcher{order:2;width:100%;margin:0;border-radius:18px;background:white;border:1px solid rgba(0,0,0,.08);box-shadow:0 2px 14px rgba(0,0,0,.08);overflow:hidden}
+  .vs-side{flex:1;min-width:0;justify-content:center;padding:10px 9px;background:var(--cream);color:var(--ink)}
+  .vs-side:first-child{border-right:1px solid var(--border)}
+  .vs-select{max-width:none;width:100%;font-size:.78rem;color:var(--ink);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6'%3E%3Cpath d='M1 1l3.5 3.5L8 1' stroke='%23706E65' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");}
+  .vs-side.vol-active .vs-select,.vs-side.chr-active .vs-select{color:white;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6'%3E%3Cpath d='M1 1l3.5 3.5L8 1' stroke='white' stroke-width='1.5' fill='none'/%3E%3C/svg%3E")}
+  .vs-side.vol-active{background:var(--teal);color:white}.vs-side.chr-active{background:var(--teal);color:white}
+  .vs-side:not(.vol-active):not(.chr-active){opacity:1;background:white}
+  main{padding-top:var(--nav-h)}
+  .view-mode-banner{font-size:.7rem;padding:7px 12px;position:sticky;top:var(--nav-h);z-index:240}
+  .hero{min-height:auto;padding:2.2rem 1.35rem 2.7rem;border-radius:0;text-align:center;justify-content:flex-start}
+  .hero-logo-large{width:60px;height:60px;margin-bottom:1rem}
+  .hero-eyebrow{font-size:.58rem;letter-spacing:.14em;line-height:1.55;margin-bottom:.75rem}
+  .hero h1{font-size:clamp(2.4rem,13vw,3.6rem);line-height:.96;margin-bottom:1rem;letter-spacing:-.05em}
+  .hero-problem{font-size:1rem;line-height:1.45;text-align:left;margin:.2rem auto 1rem;max-width:335px;padding-left:.8rem}
+  .hero-problem-lines{max-width:335px;margin:0 auto 1.25rem;gap:.1rem}
+  .hero-problem-line{font-size:.92rem;line-height:1.45;padding:.7rem 0;color:rgba(255,255,255,.7)}
+  .hero-cta{gap:10px;max-width:340px;margin:0 auto}.hero-cta .btn{flex:1 1 155px;justify-content:center;padding:13px 16px;font-size:.9rem}.hero-cta .btn.vol-only{display:none}
+  .section{padding:1.55rem 1rem}.sec-title{font-size:clamp(1.6rem,8vw,2.2rem);line-height:1.05}.sec-sub{font-size:.92rem;line-height:1.6}
+  .feat-grid{grid-template-columns:1fr;gap:10px}.feat-card{padding:1rem}.feat-card-title{font-size:.96rem}.feat-card-body{font-size:.85rem;line-height:1.55}.feat-card-proof{font-size:.72rem}
+  .traction-grid,.chr-dash-grid,.stats-mini{grid-template-columns:1fr 1fr;gap:9px}.traction-card{padding:.85rem .65rem}.traction-n{font-size:1.7rem}.traction-l{font-size:.7rem}
+  .tab-bar{height:var(--tab-h);padding-bottom:env(safe-area-inset-bottom,0px)}.tab-item{gap:2px;margin:3px 1px}.tab-icon{font-size:1.18rem}.tab-lbl{font-size:.58rem;line-height:1.05}
+  .spark-fab{display:flex;bottom:calc(var(--tab-h) + 18px);right:16px;width:56px;height:56px}
+  body.charity-view .spark-fab{display:none}
+  .toast{bottom:calc(var(--tab-h) + 18px);left:12px;right:12px;transform:none;width:auto;max-width:none;white-space:normal;border-radius:16px;padding:12px 14px;font-size:.82rem;line-height:1.45;text-align:center}
+
+  /* The Volley mobile layout */
+  .vb-screen{padding:.85rem 1rem 1.5rem;max-width:100%}
+  .vb-vol-selector{display:grid;grid-template-columns:1fr;gap:.55rem;padding:.85rem .9rem;border-radius:18px;margin-bottom:.9rem}
+  .vb-vol-selector label{font-size:.67rem;letter-spacing:.12em}.vb-vol-select{width:100%;max-width:none;min-width:0;font-size:1rem;padding:12px 40px 12px 14px}
+  #screen-volley-back .vb-vol-selector > div:last-child{margin-left:0;text-align:left;width:100%;display:flex;align-items:center;gap:8px;justify-content:space-between}
+  #vb-inbox-title{font-size:.78rem!important;color:var(--mid)!important;font-weight:700!important;text-transform:uppercase;letter-spacing:.06em}
+  #vb-unread{font-size:.72rem!important;padding:4px 10px!important}
+  .vb-hero{border-radius:26px;padding:1.65rem 1.2rem 1.85rem;margin-bottom:1rem;min-height:auto}
+  .vb-badge{font-size:.62rem;margin-bottom:1rem;padding:7px 12px;max-width:100%;justify-content:center}
+  .vb-hero h2{font-size:clamp(2rem,10vw,2.8rem);line-height:1.05;letter-spacing:-.045em;margin-bottom:.8rem}
+  .vb-hero p{font-size:1.02rem;line-height:1.65;opacity:.78;margin-bottom:1.4rem}
+  .vball-diagram{gap:.7rem;flex-direction:column}.vball-side{width:100%;padding:1rem}.vball-arrow{transform:rotate(90deg);height:48px}.vball-arrow-lbl{display:none}
+  .notif-card{border-radius:18px;padding:.85rem .9rem;gap:9px}.notif-icon{width:36px;height:36px}.notif-from{font-size:.82rem}.notif-msg{font-size:.8rem;line-height:1.5}.notif-actions{display:grid;grid-template-columns:1fr;gap:6px}.notif-btn{width:100%;padding:9px 12px;font-size:.75rem}
+  .chr-vb-tabs,.chr-soc-tabs,.social-tabs{overflow-x:auto;gap:6px;padding-bottom:4px;scrollbar-width:none}.chr-vb-tab,.chr-soc-tab,.social-tab{white-space:nowrap;flex:0 0 auto;padding:9px 12px}
+
+  /* Wallet mobile layout */
+  .impact-hero,.wallet-hero{border-radius:22px;padding:1.15rem;margin-left:0;margin-right:0}.ih-top{align-items:flex-start;gap:10px}.ih-pts{font-size:.7rem;white-space:nowrap}.ih-metrics{grid-template-columns:1fr 1fr}.ih-actions{display:grid;grid-template-columns:1fr;gap:8px}.ih-btn{width:100%;font-size:.78rem}
+  .wh-balance{font-size:2.45rem}.wh-chips{display:grid;grid-template-columns:1fr;overflow:visible}.wh-chip{min-width:0;width:100%}
+  .offer-grid{grid-template-columns:1fr;gap:9px}.offer-tile{align-items:flex-start;text-align:left;padding:.85rem .95rem;display:grid;grid-template-columns:46px 1fr auto;grid-template-areas:"icon name pts" "icon reward pts";column-gap:10px}.offer-tile-icon{grid-area:icon;width:44px;height:44px;font-size:1.5rem;margin:0}.offer-tile-name{grid-area:name;font-size:.88rem;margin:0}.offer-tile-reward{grid-area:reward;font-size:.76rem;margin:2px 0 0}.offer-tile-pts{grid-area:pts;align-self:center;white-space:nowrap}.offer-tile-stamp{position:static;grid-column:2 / 4;margin-top:6px;width:max-content}
+  .incognito-bar{flex-direction:column;align-items:stretch}.incognito-toggle-btn{width:100%;padding:10px}.share-compact{border-radius:18px}.invite-link-row{flex-direction:column;align-items:flex-start}
+}
+
+@media (max-width: 390px){
+  .nav-logo{min-width:105px}.nav-wordmark{font-size:.95rem}.vs-icon{display:none}.vs-select{font-size:.74rem}
+  .hero h1{font-size:2.45rem}.hero-problem,.hero-problem-lines{max-width:315px}.hero-cta .btn{flex:1 1 100%;}
+  .tab-lbl{font-size:.55rem}.tab-icon{font-size:1.08rem}.vb-hero h2{font-size:2.05rem}.vb-hero p{font-size:.96rem}
+}
+
 </style>
 </head>
 <body>
@@ -976,26 +1047,26 @@ footer{background:var(--teal-d);color:rgba(255,255,255,.45);text-align:center;pa
     <button class="nav-pill" onclick="showScreen('social')">&#127757; Social</button>
   </div>
   <div class="view-switcher" id="view-switcher">
-    <button class="vs-side vol-active" id="vs-vol" onclick="setView('volunteer')" title="Volunteer view">
+    <div class="vs-side vol-active" id="vs-vol" onclick="setView('volunteer')" tabindex="0" role="button" title="Volunteer view">
       <span class="vs-icon">👤</span>
-      <select class="vs-select" id="toggle-vol-select" onchange="setVolFromToggle(this.value)" onclick="event.stopPropagation()">
+      <select class="vs-select" id="toggle-vol-select" onchange="setVolFromToggle(this.value)" onfocus="setView('volunteer')" onclick="setView('volunteer');event.stopPropagation()" aria-label="Choose volunteer">
         <option value="sukie">Sukie Gandhi</option>
         <option value="eashwar">Eashwar Ramesh</option>
-        <option value="chelsea">Chelsea Roth</option>
+        <option value="chelsea" selected>Chelsea Roth</option>
         <option value="nicole">Nicole Heimberg</option>
       </select>
-    </button>
-    <button class="vs-side" id="vs-chr" onclick="setView('charity')" title="Charity view">
+    </div>
+    <div class="vs-side" id="vs-chr" onclick="setView('charity')" tabindex="0" role="button" title="Organisation view">
       <span class="vs-icon">🏠</span>
-      <select class="vs-select" id="toggle-org-select" onchange="setActiveOrg(this.value)" onclick="event.stopPropagation()">
+      <select class="vs-select" id="toggle-org-select" onchange="setOrgFromToggle(this.value)" onfocus="setView('charity')" onclick="setView('charity');event.stopPropagation()" aria-label="Choose organisation">
         <option value="hmc">Hackney Migrant Centre</option>
         <option value="rspca">RSPCA Central London</option>
         <option value="gw">Groundwork London</option>
-        <option value="tkn">The Kids Network</option>
+        <option value="tkn" selected>The Kids Network</option>
         <option value="re">Re-Engage</option>
         <option value="abbey">Abbey Community Centre</option>
       </select>
-    </button>
+    </div>
   </div>
 </nav>
 
@@ -1035,7 +1106,7 @@ footer{background:var(--teal-d);color:rgba(255,255,255,.45);text-align:center;pa
 </button>
 
 <main>
-<div class="view-mode-banner vol-mode show" id="view-banner">👤 Volunteer View — Sukie Gandhi</div>
+<div class="view-mode-banner vol-mode show" id="view-banner">👤 Volunteer View — Chelsea Roth</div>
 
 <!-- ════ HOME ════ -->
 <div class="screen active" id="screen-home">
@@ -1055,7 +1126,7 @@ footer{background:var(--teal-d);color:rgba(255,255,255,.45);text-align:center;pa
       <div class="hero-problem-line">Finding, vetting and applying for a role takes longer than the role itself.</div>
     </div>
     <div class="hero-cta">
-      <button class="btn btn-spark" onclick="showScreen('swipe')">▶ Start swiping</button>
+      <button class="btn btn-spark vol-only" onclick="showScreen('swipe')">▶ Start swiping</button>
       <button class="btn btn-ghost" onclick="showScreen('volley-back')">↔ The Volley</button>
       <button class="btn btn-ghost" onclick="showScreen('spark')">✦ Ask Spark</button>
 
@@ -1065,7 +1136,7 @@ footer{background:var(--teal-d);color:rgba(255,255,255,.45);text-align:center;pa
 
     <div class="section">
     <p class="sec-label">What makes Volley different</p>
-    <h2 class="sec-title">One platform. Five things you can&rsquo;t find anywhere else.</h2>
+    <h2 class="sec-title">One platform. Four things you can&rsquo;t find anywhere else.</h2>
     <div class="feat-grid">
       <div class="feat-card">
         <div class="feat-card-em">&#9889;</div>
@@ -1090,12 +1161,6 @@ footer{background:var(--teal-d);color:rgba(255,255,255,.45);text-align:center;pa
         <div class="feat-card-title">Outcome measurement</div>
         <div class="feat-card-body">Every hour traced from skill applied to community reached. Theory of Change at every level. Output counts are the start, not the evidence.</div>
         <div class="feat-card-proof">94% WouldWorkAgain across confirmed roles</div>
-      </div>
-      <div class="feat-card verified">
-        <div class="feat-card-em">&#9989;</div>
-        <div class="feat-card-title">Verified only</div>
-        <div class="feat-card-body">Every organisation Charity Commission verified before a single role is posted. No unverified orgs. Ever. The trust barrier, solved structurally.</div>
-        <div class="feat-card-proof">17 verified London charities in beta</div>
       </div>
     </div>
 
@@ -1211,11 +1276,10 @@ footer{background:var(--teal-d);color:rgba(255,255,255,.45);text-align:center;pa
       <select class="vb-vol-select" id="vb-vol-select" onchange="setVol(this.value);renderVolleyBack(this.value)">
         <option value="sukie">Sukie Gandhi</option>
         <option value="eashwar">Eashwar Ramesh</option>
-        <option value="chelsea">Chelsea Roth</option>
+        <option value="chelsea" selected>Chelsea Roth</option>
         <option value="nicole">Nicole Heimberg</option>
       </select>
       <div style="margin-left:auto;text-align:right">
-        <span id="vb-inbox-title" style="font-size:.88rem;font-weight:800;color:var(--ink)">Sukie's Volley inbox</span><br>
         <span id="vb-unread" style="font-size:.65rem;background:var(--coral-l);color:var(--coral);padding:2px 8px;border-radius:100px;font-weight:700"></span>
       </div>
     </div>
@@ -1247,7 +1311,7 @@ footer{background:var(--teal-d);color:rgba(255,255,255,.45);text-align:center;pa
 
     <!-- LIVE NOTIFICATION FEED -->
     <div class="notif-feed" id="vb-notif-feed">
-      <div style="text-align:center;padding:2rem;color:var(--mid);font-size:.8rem">Loading your Volley inbox…</div>
+      <div style="text-align:center;padding:2rem;color:var(--mid);font-size:.8rem">Loading notifications…</div>
     </div>
 
     <!-- HOW THE VOLLEY WORKS -->
@@ -1361,7 +1425,7 @@ footer{background:var(--teal-d);color:rgba(255,255,255,.45);text-align:center;pa
 <!-- ════ IMPACT ════ -->
 <div class="screen" id="screen-impact">
   <div class="section">
-    <p class="sec-label">Impact &amp; Revenue — UC-3</p>
+    <p class="sec-label">Impact &amp; Revenue</p>
     <h2 class="sec-title">From outputs to outcomes</h2>
     <p class="sec-sub">Counting volunteers is the start, not the finish. Volley measures what actually changes — for charities, for volunteers, and for communities — through a live Theory of Change dashboard grounded in the M&amp;E framework.</p>
 
@@ -1460,7 +1524,7 @@ footer{background:var(--teal-d);color:rgba(255,255,255,.45);text-align:center;pa
 
     <!-- ══ PANEL: Corporate Value ══ -->
     <div class="impact-panel" id="ipanel-corporate">
-      <p class="sec-label">Corporate — UC-3</p>
+      <p class="sec-label">Corporate Value</p>
       <h3 style="font-size:1.15rem;font-weight:800;margin-bottom:.4rem;letter-spacing:-.02em">What corporates actually get</h3>
       <p style="font-size:.83rem;color:var(--mid);line-height:1.65;margin-bottom:1.5rem">The reward mechanism is explicit here — six concrete value propositions that make the business case for CSR engagement on Volley.</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:1.5rem">
@@ -1540,7 +1604,7 @@ footer{background:var(--teal-d);color:rgba(255,255,255,.45);text-align:center;pa
 <div class="screen" id="screen-social">
   <div id="chr-social-wrap" style="display:none">
     <div class="section"><p class="sec-label">Organisation Social</p>
-      <h2 class="sec-title" id="chr-soc-title">Hackney Migrant Centre</h2>
+      <h2 class="sec-title" id="chr-soc-title">The Kids Network</h2>
       <div class="chr-soc-tabs">
         <button class="chr-soc-tab active" onclick="switchChrSocTab('reach')">&#128200; Reach</button>
         <button class="chr-soc-tab" onclick="switchChrSocTab('post')">&#128172; Post update</button>
@@ -1600,7 +1664,7 @@ footer{background:var(--teal-d);color:rgba(255,255,255,.45);text-align:center;pa
       <div style="margin-bottom:.75rem">
         <p style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin-bottom:3px">Volunteer Impact</p>
         <h3 style="font-size:.98rem;font-weight:800;letter-spacing:-.02em;margin-bottom:3px">Your impact, traced to the community</h3>
-        <p style="font-size:.76rem;color:var(--mid);line-height:1.5">Every volunteer hour creates a causal chain. Here&rsquo;s yours &mdash; from the skill you applied to the community that benefited. Switch volunteer in Discover to update this view.</p>
+        <p style="font-size:.76rem;color:var(--mid);line-height:1.5">Every volunteer hour creates a causal chain. Here&rsquo;s yours &mdash; from the skill you applied to the community that benefited. Switch volunteer from the top selector to update this view.</p>
       </div>
 
       <!-- Chain cards — injected by renderVolImpactChain() -->
@@ -1922,7 +1986,7 @@ footer{background:var(--teal-d);color:rgba(255,255,255,.45);text-align:center;pa
 </div>
 <div class="toast" id="toast"></div>
 
-<footer>Volley CIC — LSE MG4H4E Altruistic Entrepreneur Project · Group 2 · Candidate Numbers: 72030, 73572, 60188, 73985, 6</footer>
+<footer>Volley CIC — LSE MG4H4E Altruistic Entrepreneur Project · Group 2</footer>
 
 <script>// ══════════════ DATA ══════════════
 const ORGS = [
@@ -2040,7 +2104,7 @@ const VDATA = {
   nicole:{av:'NH',bg:'#FEF0D8',c:'#A05C0A',name:'Nicole Heimberg',role:'Business Dev Manager, Plan International Ukraine',skills:['Grant Writing','Humanitarian Fundraising','EU/UN Donor Relations','Programme Design','Impact Reporting'],avail:['Weekday evenings','Remote OK','2–5 hrs/month'],bio:'14+ years leading BD for Plan International, Save the Children Yemen ($85M), GOAL Iraq. Secured €15M+ from INTPA/ECHO/UN.'},
 };
 
-let activeVol = 'sukie', cardIdx = 0;
+let activeVol = 'chelsea', cardIdx = 0;
 var incognitoMode = false;
 let isDragging = false, startX = 0, curX = 0;
 let sparkTyping = false;
@@ -2854,7 +2918,7 @@ var VOLLEY_DATA = {
   sukie: {
     name: 'Sukie Gandhi',
     skill: '12× Salesforce Certified',
-    inbox: "Sukie's Volley inbox",
+    
     unread: 3,
     notifs: [
       {type:'org', icon:'🌍', org:'Hackney Migrant Centre', fav:'Favourite ★', sdg:['SDG 17','SDG 10'], time:'2 min ago',
@@ -2872,7 +2936,7 @@ var VOLLEY_DATA = {
   eashwar: {
     name: 'Eashwar Ramesh',
     skill: 'Strategy & Growth · Social Enterprise',
-    inbox: "Eashwar's Volley inbox",
+    
     unread: 2,
     notifs: [
       {type:'org', icon:'🚀', org:'UnLtd', fav:'Favourite ★', time:'5 min ago',
@@ -2887,7 +2951,7 @@ var VOLLEY_DATA = {
   chelsea: {
     name: 'Chelsea Roth',
     skill: 'ESG & Strategic Comms · PR',
-    inbox: "Chelsea's Volley inbox",
+    
     unread: 3,
     notifs: [
       {type:'org',icon:'⭐',org:'The Kids Network',fav:'Favourite ★',sdg:['SDG 4','SDG 10'],time:'2 min ago',
@@ -2909,7 +2973,7 @@ var VOLLEY_DATA = {
   nicole: {
     name: 'Nicole Heimberg',
     skill: 'Grant Writing · EU/UN Donor Relations',
-    inbox: "Nicole's Volley inbox",
+    
     unread: 3,
     notifs: [
       {type:'org', icon:'🌎', org:'Refugee Council', fav:'Favourite ★', time:'1 min ago',
@@ -2936,7 +3000,7 @@ function renderVolleyBack(v) {
   if (volName) volName.textContent = d.name;
   if (volSkill) volSkill.textContent = d.skill;
   var inboxTitle = document.getElementById('vb-inbox-title');
-  if (inboxTitle) inboxTitle.textContent = d.inbox;
+  if (inboxTitle) inboxTitle.textContent = ''; // duplicate inbox title removed; top selector is source of truth
   var unreadSpan = document.getElementById('vb-unread');
   var tabBadge   = document.getElementById('vb-badge');
   if (unreadSpan) unreadSpan.textContent = d.unread + ' unread';
@@ -3068,7 +3132,7 @@ function showMatchCard(v,idx){
   if(v)activeVol=v;cardIdx=idx||0;renderCards();showScreen('swipe');
 }
 
-var activeView='volunteer',activeOrg='hmc';
+var activeView='volunteer',activeOrg='tkn';
 var CHARITY_PERSONA={name:'Hackney Migrant Centre',av:'HM',bg:'#E0ECFC',c:'#1A5EA8',role:'Volunteer Coordinator · CC Reg 1171353'};
 var CHARITY_ORG_DATA={
   hmc:{name:'Hackney Migrant Centre',av:'HM',bg:'#E0ECFC',c:'#1A5EA8',role:'Volunteer Coordinator · CC Reg 1171353',vols:38,hrs:142,mentions:14,wwa:'96%'},
@@ -3078,12 +3142,14 @@ var CHARITY_ORG_DATA={
   re:{name:'Re-Engage',av:'RE',bg:'#FEF0D8',c:'#A05C0A',role:'Volunteer Coordinator · CC Reg 211241',vols:44,hrs:96,mentions:18,wwa:'97%'},
   abbey:{name:'Abbey Community Centre',av:'AC',bg:'#E0ECFC',c:'#1A5EA8',role:'Volunteer Coordinator · CC Reg 1054914',vols:52,hrs:178,mentions:25,wwa:'95%'}
 };
-function setVolFromToggle(v){setVol(v);}
+function setVolFromToggle(v){setVol(v); if(activeView!=='volunteer') setView('volunteer'); else showToast('👤 Switched to '+(VDATA[v]?VDATA[v].name:v));}
+function setOrgFromToggle(orgId){setActiveOrg(orgId);}
 function setActiveOrg(orgId){
   activeOrg=orgId; var d=CHARITY_ORG_DATA[orgId]; if(!d)return;
+  var orgSel=document.getElementById('toggle-org-select'); if(orgSel) orgSel.value=orgId;
   CHARITY_PERSONA.name=d.name;CHARITY_PERSONA.av=d.av;CHARITY_PERSONA.bg=d.bg;CHARITY_PERSONA.c=d.c;CHARITY_PERSONA.role=d.role;
   var banner=document.getElementById('view-banner');
-  if(banner&&activeView==='charity') banner.textContent='🏠 Charity View — '+d.name;
+  if(banner&&activeView==='charity') banner.textContent='🏠 Organisation View — '+d.name;
   var ois=document.getElementById('org-impact-select');
   if(ois){ois.value=orgId;renderOrgImpact(orgId);}
   if(activeView==='charity'){
@@ -3094,9 +3160,15 @@ function setActiveOrg(orgId){
     if(cur==='volley-back')_renderCharityInbox();
     else if(cur==='social')_renderCharitySocial(orgId);
   }
-  // Also ensure charity view is active when org changes
+  // Also ensure charity view is active when an organisation is selected.
+  // Stay on Home when already there so the organisation home CTA can show only The Volley + Ask Spark.
+  var curScreen=((document.querySelector('.screen.active')||{}).id||'').replace('screen-','');
   if(activeView!=='charity') setView('charity');
   else showToast('🏠 Switched to '+d.name);
+  if(curScreen==='swipe'||curScreen==='orgs') showScreen('home');
+  else if(curScreen==='social') _renderCharitySocial(orgId);
+  else if(curScreen==='volley-back') _renderCharityInbox();
+  else if(curScreen==='impact') switchImpactTab('orgimpact');
 }
 function setView(view){
   activeView=view;
@@ -3108,7 +3180,7 @@ function setView(view){
   if(view==='charity'){
     document.body.classList.add('charity-view');
     var d=CHARITY_ORG_DATA[activeOrg]||CHARITY_PERSONA;
-    if(banner){banner.className='view-mode-banner chr-mode show';banner.textContent='🏠 Charity View — '+d.name;}
+    if(banner){banner.className='view-mode-banner chr-mode show';banner.textContent='🏠 Organisation View — '+d.name;}
     if(vsVol){vsVol.classList.remove('vol-active');vsVol.classList.remove('chr-active');}
     if(vsChr){vsChr.classList.add('chr-active');vsChr.classList.remove('vol-active');}
     if(av){av.style.background=d.bg;av.style.color=d.c;av.textContent=d.av;}
@@ -3127,14 +3199,14 @@ function setView(view){
     else if(cur==='impact')switchImpactTab('orgimpact');
     else if(cur==='social')_showCharitySocial();
     else if(cur==='spark')sparkSay('Can Volley help us manage volunteers as well as recruit them?');
-    showToast('🏠 Charity view — '+d.name);
+    showToast('🏠 Organisation view — '+d.name);
   }else{
     document.body.classList.remove('charity-view');
     if(banner){banner.className='view-mode-banner vol-mode show';banner.textContent='👤 Volunteer View — '+(VDATA[activeVol]?VDATA[activeVol].name:'Sukie Gandhi');}
     if(vsVol){vsVol.classList.add('vol-active');vsVol.classList.remove('chr-active');}
     if(vsChr){vsChr.classList.remove('chr-active');vsChr.classList.remove('vol-active');}
     updateSignedInBar(activeVol);
-    if(selBar)selBar.style.display='';
+    if(selBar)selBar.style.display='none';
     // Restore vol-only tabs
     ['tab-swipe','tab-orgs'].forEach(function(id){
       var el=document.getElementById(id);if(el)el.style.display='';
@@ -3157,7 +3229,7 @@ function _renderCharityInbox(){
   var it=document.getElementById('vb-inbox-title'),ub=document.getElementById('vb-unread'),tb=document.getElementById('vb-badge');
   var sel=document.querySelector('.vb-vol-selector');
   if(vn)vn.textContent=d.name;if(vs)vs.textContent=d.role;
-  if(it)it.textContent=d.name+'’s Inbox';if(ub)ub.textContent='3 active';if(tb)tb.textContent='3';
+  if(it)it.textContent='Organisation inbox';if(ub)ub.textContent='3 active';if(tb)tb.textContent='3';
   if(sel)sel.style.display='none';
   var feed=document.getElementById('vb-notif-feed');if(!feed)return;
   var postToast='⚡ Role posted — Volley will match volunteers!';
@@ -3487,6 +3559,11 @@ function getOrgAbout(orgName) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+  activeVol = 'chelsea';
+  activeOrg = 'tkn';
+  var tvs=document.getElementById('toggle-vol-select'); if(tvs) tvs.value='chelsea';
+  var tos=document.getElementById('toggle-org-select'); if(tos) tos.value='tkn';
+  var vbs=document.getElementById('vb-vol-select'); if(vbs) vbs.value='chelsea';
   updateSignedInBar(activeVol);
   renderOrgs();
   renderSdgFilterBar();
