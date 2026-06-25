@@ -171,14 +171,6 @@ main{padding-top:var(--nav-h);min-height:100vh}
 /* CARD STACK */
 .cstack{position:relative;width:100%;height:460px;margin:.5rem auto .75rem}
 .scard{position:absolute;inset:0;border-radius:24px;background:white;overflow:hidden;cursor:grab;box-shadow:0 4px 20px rgba(0,0,0,.10),0 16px 60px rgba(0,0,0,.10);user-select:none;will-change:transform}
-/* Mobile swipe stability: keep the page fixed while a role card is being dragged. */
-.cstack,.scard{touch-action:none;-ms-touch-action:none;overscroll-behavior:contain}
-body.swipe-scroll-locked{overscroll-behavior:none}
-@media (max-width:768px){
-  .cstack{height:430px;max-height:calc(100svh - var(--nav-h) - var(--tab-h) - 96px);min-height:390px}
-  .scard{touch-action:none;-webkit-user-select:none;user-select:none}
-}
-
 .scard:active{cursor:grabbing}
 .scard.c2{transform:translateY(10px) scale(0.97);z-index:1}
 .scard.c3{transform:translateY(20px) scale(0.94);z-index:0}
@@ -1034,6 +1026,61 @@ footer{background:var(--teal-d);color:rgba(255,255,255,.45);text-align:center;pa
   .tab-lbl{font-size:.55rem}.tab-icon{font-size:1.08rem}.vb-hero h2{font-size:2.05rem}.vb-hero p{font-size:.96rem}
 }
 
+
+/* ── DISCOVER QA FIX: card-first layout + no page scroll during swipe ── */
+#screen-swipe .swipe-outer{
+  padding-top:.25rem;
+}
+#screen-swipe .action-bar{
+  margin:.1rem 0 .35rem;
+  gap:10px;
+}
+#screen-swipe .cstack{
+  margin:0 auto .85rem;
+  transform:translateY(-4px);
+  touch-action:none;
+  overscroll-behavior:contain;
+}
+#screen-swipe .vol-profile-bar{
+  margin:.35rem 0 1rem;
+}
+#screen-swipe .scard{
+  touch-action:none;
+  -ms-touch-action:none;
+  overscroll-behavior:contain;
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+html.swipe-dragging,
+body.swipe-dragging{
+  overflow:hidden !important;
+  overscroll-behavior:none !important;
+  touch-action:none !important;
+}
+@media (max-width:768px){
+  #screen-swipe .swipe-outer{padding:.15rem .85rem 1.35rem;}
+  #screen-swipe .action-bar{margin:0 0 .25rem;gap:12px;}
+  #screen-swipe .abtn-skip,
+  #screen-swipe .abtn-apply{width:48px;height:48px;}
+  #screen-swipe .abtn-info{width:44px;height:44px;}
+  #screen-swipe .abtn-super{width:58px;height:58px;}
+  #screen-swipe .cstack{
+    height:clamp(430px, calc(100svh - var(--nav-h) - var(--tab-h) - 86px), 480px);
+    margin-top:-2px;
+    margin-bottom:.75rem;
+  }
+  #screen-swipe .vol-profile-bar{border-radius:18px;margin:.25rem 0 .95rem;}
+}
+@media (max-width:390px){
+  #screen-swipe .cstack{height:430px;}
+  #screen-swipe .card-body{padding:.78rem .95rem;}
+  #screen-swipe .card-title{font-size:.92rem;}
+  #screen-swipe .card-desc{font-size:.72rem;line-height:1.42;}
+  #screen-swipe .card-detail-strip{font-size:.63rem;padding:.45rem .82rem;gap:4px;}
+  #screen-swipe .coa-text{font-size:.68rem;line-height:1.42;}
+}
+
 </style>
 </head>
 <body>
@@ -1226,7 +1273,18 @@ footer{background:var(--teal-d);color:rgba(255,255,255,.45);text-align:center;pa
 <div class="screen" id="screen-swipe">
   <div class="swipe-outer">
 
-    <!-- Volunteer profile bar with switcher -->
+    <!-- Action buttons — compact controls above the cards -->
+    <div class="action-bar" aria-label="Swipe controls">
+      <button class="abtn abtn-skip" onclick="doSwipe('left')" title="Pass" aria-label="Pass">&times;</button>
+      <button class="abtn abtn-apply" onclick="doSwipe('right')" title="Apply" aria-label="Apply">&check;</button>
+      <button class="abtn abtn-info" onclick="showScreen('spark')" title="Ask Spark" aria-label="Ask Spark">&#10022;</button>
+      <button class="abtn abtn-super" onclick="doSwipe('super')" title="Super Apply" aria-label="Super Apply">&#9889;</button>
+    </div>
+
+    <!-- Card stack — now sits above the volunteer profile -->
+    <div class="cstack" id="cstack"></div>
+
+    <!-- Volunteer profile bar with switcher — moved below the active card -->
     <div class="vol-profile-bar" id="vol-profile-bar">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
         <div class="vpb-top" style="flex:1">
@@ -1247,17 +1305,6 @@ footer{background:var(--teal-d);color:rgba(255,255,255,.45);text-align:center;pa
       <div class="pill-row" id="vpb-skills" style="margin-top:.55rem"></div>
       <div class="pill-row" id="vpb-avail" style="margin-top:4px"></div>
     </div>
-
-    <!-- Action buttons — above the cards -->
-    <div class="action-bar">
-      <button class="abtn abtn-skip" onclick="doSwipe('left')" title="Pass">&times;</button>
-      <button class="abtn abtn-apply" onclick="doSwipe('right')" title="Apply">&check;</button>
-      <button class="abtn abtn-info" onclick="showScreen('spark')" title="Ask Spark">&#10022;</button>
-      <button class="abtn abtn-super" onclick="doSwipe('super')" title="Super Apply">&#9889;</button>
-    </div>
-
-    <!-- Card stack -->
-    <div class="cstack" id="cstack"></div>
 
     <!-- Compact impact chain -->
     <div class="discover-impact-card" aria-label="Your impact chain">
@@ -2114,8 +2161,18 @@ const VDATA = {
 
 let activeVol = 'chelsea', cardIdx = 0;
 var incognitoMode = false;
-let isDragging = false, startX = 0, curX = 0;
+let isDragging = false, startX = 0, startY = 0, curX = 0;
 let sparkTyping = false;
+
+
+function lockSwipeScroll() {
+  document.documentElement.classList.add('swipe-dragging');
+  document.body.classList.add('swipe-dragging');
+}
+function unlockSwipeScroll() {
+  document.documentElement.classList.remove('swipe-dragging');
+  document.body.classList.remove('swipe-dragging');
+}
 
 // ══════════════ NAV ══════════════
 function showScreen(id) {
@@ -2133,7 +2190,7 @@ function showScreen(id) {
   var tabEl = document.getElementById(tabMap[id]);
   if (tabEl) tabEl.classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
-  if (id === 'swipe') { renderCards(); renderVolProfileBar(); updateSignedInBar(activeVol); stabilizeSwipeCardViewport({instant:true}); }
+  if (id === 'swipe') { renderCards(); renderVolProfileBar(); updateSignedInBar(activeVol); }
   if (id === 'volley-back') {
     if (activeView === 'charity') _renderCharityInbox();
     else renderVolleyBack(activeVol);
@@ -2324,122 +2381,69 @@ function renderCards() {
 // renderProf replaced by renderVolProfileBar
 
 // One-time global drag handlers
-// Mobile fix: while a card is being swiped, lock the document scroll so iOS Safari
-// does not move the page underneath the gesture. Outside the card, normal scrolling remains.
 let _dragEl = null, _likeStamp = null, _nopeStamp = null;
-let startY = 0, dragStartedOnTouch = false, swipeScrollY = 0, swipeScrollLocked = false;
-
-function lockSwipeScroll() {
-  if (swipeScrollLocked) return;
-  swipeScrollLocked = true;
-  swipeScrollY = window.scrollY || document.documentElement.scrollTop || 0;
-  document.body.classList.add('swipe-scroll-locked');
-  // Fixed-position lock is more reliable on iOS Safari than overflow:hidden alone.
-  document.body.style.position = 'fixed';
-  document.body.style.top = '-' + swipeScrollY + 'px';
-  document.body.style.left = '0';
-  document.body.style.right = '0';
-  document.body.style.width = '100%';
-}
-
-function unlockSwipeScroll() {
-  if (!swipeScrollLocked) return;
-  swipeScrollLocked = false;
-  document.body.classList.remove('swipe-scroll-locked');
-  document.body.style.position = '';
-  document.body.style.top = '';
-  document.body.style.left = '';
-  document.body.style.right = '';
-  document.body.style.width = '';
-  window.scrollTo(0, swipeScrollY);
-}
-
-function updateDrag(clientX) {
+document.addEventListener('mousemove', e => {
   if (!isDragging || !_dragEl) return;
-  curX = clientX - startX;
+  curX = e.clientX - startX;
   _dragEl.style.transform = 'translateX(' + curX + 'px) rotate(' + (curX * 0.035) + 'deg)';
   if (_likeStamp) _likeStamp.style.opacity = curX > 20 ? Math.min((curX - 20) / 60, 1) : 0;
   if (_nopeStamp) _nopeStamp.style.opacity = curX < -20 ? Math.min((-curX - 20) / 60, 1) : 0;
-}
-
-function endDrag() {
+});
+document.addEventListener('mouseup', () => {
   if (!isDragging || !_dragEl) return;
-  isDragging = false;
-  unlockSwipeScroll();
-  _dragEl.style.transition = '';
+  isDragging = false; unlockSwipeScroll(); _dragEl.style.transition = '';
+  if (_likeStamp) _likeStamp.style.opacity = 0;
+  if (_nopeStamp) _nopeStamp.style.opacity = 0;
+  if (curX > 80) doSwipe('right');
+  else if (curX < -80) doSwipe('left');
+  else _dragEl.style.transform = '';
+  curX = 0; _dragEl = null;
+});
+document.addEventListener('touchmove', e => {
+  if (!isDragging || !_dragEl || !e.touches || !e.touches.length) return;
+  curX = e.touches[0].clientX - startX;
+  var dy = e.touches[0].clientY - startY;
+  if (e.cancelable && (Math.abs(curX) > 3 || Math.abs(curX) >= Math.abs(dy))) e.preventDefault();
+  _dragEl.style.transform = 'translateX(' + curX + 'px) rotate(' + (curX * 0.035) + 'deg)';
+  if (_likeStamp) _likeStamp.style.opacity = curX > 20 ? Math.min((curX - 20) / 60, 1) : 0;
+  if (_nopeStamp) _nopeStamp.style.opacity = curX < -20 ? Math.min((-curX - 20) / 60, 1) : 0;
+}, {passive:false});
+document.addEventListener('touchend', () => {
+  if (!isDragging || !_dragEl) return;
+  isDragging = false; unlockSwipeScroll(); _dragEl.style.transition = '';
   if (_likeStamp) _likeStamp.style.opacity = 0;
   if (_nopeStamp) _nopeStamp.style.opacity = 0;
   if (curX > 60) doSwipe('right');
   else if (curX < -60) doSwipe('left');
   else _dragEl.style.transform = '';
-  curX = 0;
-  _dragEl = null;
-  _likeStamp = null;
-  _nopeStamp = null;
-  dragStartedOnTouch = false;
-}
-
-function stabilizeSwipeCardViewport(opts) {
-  opts = opts || {};
-  if (curScreen !== 'swipe' || window.innerWidth > 768) return;
-  requestAnimationFrame(function() {
-    var card = document.querySelector('#cstack .c1');
-    if (!card) return;
-    var rect = card.getBoundingClientRect();
-    var safeTop = (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 106) + 12;
-    var safeBottom = window.innerHeight - ((parseInt(getComputedStyle(document.documentElement).getPropertyValue('--tab-h')) || 70) + 18);
-    // Keep the active card comfortably between the sticky top nav and bottom tab bar.
-    if (rect.top < safeTop || rect.bottom > safeBottom) {
-      var target = window.scrollY + rect.top - safeTop;
-      window.scrollTo({ top: Math.max(0, target), behavior: opts.instant ? 'auto' : 'smooth' });
-    }
-  });
-}
-
-document.addEventListener('mousemove', function(e) {
-  updateDrag(e.clientX);
+  curX = 0; _dragEl = null;
 });
-document.addEventListener('mouseup', endDrag);
-
-document.addEventListener('touchmove', function(e) {
+document.addEventListener('touchcancel', () => {
   if (!isDragging || !_dragEl) return;
-  // This is the critical mobile fix: stop the document from scrolling while the card follows the finger.
-  if (e.cancelable) e.preventDefault();
-  updateDrag(e.touches[0].clientX);
-}, {passive:false});
-
-document.addEventListener('touchend', endDrag, {passive:false});
-document.addEventListener('touchcancel', endDrag, {passive:false});
+  isDragging = false; unlockSwipeScroll();
+  if (_likeStamp) _likeStamp.style.opacity = 0;
+  if (_nopeStamp) _nopeStamp.style.opacity = 0;
+  _dragEl.style.transition = '';
+  _dragEl.style.transform = '';
+  curX = 0; _dragEl = null;
+});
 
 function addDrag(el) {
   const likeStamp = el.querySelector('.stamp-like');
   const nopeStamp = el.querySelector('.stamp-nope');
-  el.addEventListener('mousedown', function(e) {
-    if (e.button !== 0) return;
-    isDragging = true;
-    startX = e.clientX;
-    startY = e.clientY;
-    _dragEl = el;
-    _likeStamp = likeStamp;
-    _nopeStamp = nopeStamp;
+  el.addEventListener('mousedown', e => {
+    isDragging = true; startX = e.clientX; startY = e.clientY || 0; lockSwipeScroll();
+    _dragEl = el; _likeStamp = likeStamp; _nopeStamp = nopeStamp;
     el.style.transition = 'none';
   });
-  el.addEventListener('touchstart', function(e) {
+  el.addEventListener('touchstart', e => {
     if (!e.touches || !e.touches.length) return;
     if (e.cancelable) e.preventDefault();
-    isDragging = true;
-    dragStartedOnTouch = true;
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-    _dragEl = el;
-    _likeStamp = likeStamp;
-    _nopeStamp = nopeStamp;
+    isDragging = true; startX = e.touches[0].clientX; startY = e.touches[0].clientY; lockSwipeScroll();
+    _dragEl = el; _likeStamp = likeStamp; _nopeStamp = nopeStamp;
     el.style.transition = 'none';
-    lockSwipeScroll();
-    stabilizeSwipeCardViewport({instant:true});
   }, {passive:false});
 }
-
 
 function doSwipe(dir) {
   const stack = document.getElementById('cstack');
@@ -2448,12 +2452,12 @@ function doSwipe(dir) {
   const card = (CARDS[activeVol] || [])[cardIdx];
   if (dir === 'right' || dir === 'super') {
     top.classList.add('go-right');
-    setTimeout(() => { cardIdx++; renderCards(); stabilizeSwipeCardViewport({instant:true}); var isKids=card&&card.org==='The Kids Network';
+    setTimeout(() => { cardIdx++; renderCards(); var isKids=card&&card.org==='The Kids Network';
     showApplied(card,dir==='super');
     if(isKids)showToast('⚡ Super Applied to Kids Network! Expect a reply within 48 hrs.'); }, 380);
   } else {
     top.classList.add('go-left');
-    setTimeout(() => { cardIdx++; renderCards(); stabilizeSwipeCardViewport({instant:true}); showToast('Passed'); }, 380);
+    setTimeout(() => { cardIdx++; renderCards(); showToast('Passed'); }, 380);
   }
 }
 
