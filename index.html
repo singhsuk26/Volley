@@ -177,11 +177,14 @@ main{padding-top:var(--nav-h);min-height:100vh}
 .scard.c1{z-index:10}
 .scard.go-right{animation:flyRight .38s cubic-bezier(0.4,0,0.2,1) forwards}
 .scard.go-left{animation:flyLeft .38s cubic-bezier(0.4,0,0.2,1) forwards}
+.scard.go-up{animation:flyUp .42s cubic-bezier(0.4,0,0.2,1) forwards}
 @keyframes flyRight{to{transform:translateX(140%) rotate(18deg);opacity:0}}
 @keyframes flyLeft{to{transform:translateX(-140%) rotate(-18deg);opacity:0}}
-.stamp-like,.stamp-nope{position:absolute;top:18px;z-index:5;font-size:.72rem;font-weight:900;letter-spacing:.1em;border-radius:8px;padding:4px 10px;opacity:0;transition:opacity .1s;text-transform:uppercase}
+@keyframes flyUp{to{transform:translateY(-140%) scale(.9);opacity:0}}
+.stamp-like,.stamp-nope,.stamp-super{position:absolute;top:18px;z-index:5;font-size:.72rem;font-weight:900;letter-spacing:.1em;border-radius:8px;padding:4px 10px;opacity:0;transition:opacity .1s;text-transform:uppercase;background:rgba(255,255,255,.92)}
 .stamp-like{left:14px;color:var(--teal);border:3px solid var(--teal)}
 .stamp-nope{right:14px;color:#E04343;border:3px solid #E04343}
+.stamp-super{left:50%;transform:translateX(-50%);color:var(--spark);border:3px solid var(--spark);box-shadow:0 4px 14px rgba(0,200,150,.24)}
 .card-img-area{position:relative;height:118px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .card-badge-match{position:absolute;top:10px;left:10px;background:var(--spark);color:var(--ink);border-radius:100px;padding:3px 10px;font-size:.68rem;font-weight:800}
 .card-badge-cc{position:absolute;top:10px;right:10px;background:rgba(255,255,255,.92);color:var(--teal);border-radius:100px;padding:3px 9px;font-size:.64rem;font-weight:700}
@@ -1081,6 +1084,48 @@ body.swipe-dragging{
   #screen-swipe .coa-text{font-size:.68rem;line-height:1.42;}
 }
 
+
+/* ── QA FIXES: centered home feature cards + clearer Volley action states ── */
+#screen-home .home-feature-section{
+  max-width:1260px;
+}
+#screen-home .home-feature-section .sec-label,
+#screen-home .home-feature-section .sec-title{
+  text-align:center;
+}
+#screen-home .home-feature-section .feat-grid{
+  grid-template-columns:repeat(4,minmax(220px,260px));
+  max-width:none;
+  width:max-content;
+  margin:1.5rem auto 0;
+  justify-content:center;
+  justify-items:stretch;
+}
+#screen-home .home-feature-section .feat-card{
+  height:100%;
+  width:260px;
+}
+.notif-card.is-clearing{
+  opacity:0;
+  transform:translateX(24px) scale(.98);
+  max-height:0 !important;
+  margin:0 !important;
+  padding-top:0 !important;
+  padding-bottom:0 !important;
+  border-width:0 !important;
+  overflow:hidden;
+  transition:opacity .22s ease,transform .22s ease,max-height .28s ease,margin .28s ease,padding .28s ease,border-width .28s ease;
+}
+@media (max-width:980px){
+  #screen-home .home-feature-section{max-width:680px;}
+  #screen-home .home-feature-section .feat-grid{grid-template-columns:repeat(2,minmax(0,260px));width:100%;max-width:620px;}
+}
+@media (max-width:560px){
+  #screen-home .home-feature-section{max-width:420px;}
+  #screen-home .home-feature-section .feat-grid{grid-template-columns:1fr;width:100%;max-width:360px;}
+  #screen-home .home-feature-section .feat-card{width:100%;}
+}
+
 </style>
 </head>
 <body>
@@ -1111,7 +1156,7 @@ body.swipe-dragging{
         <option value="nicole">Nicole Heimberg</option>
       </select>
     </div>
-    <div class="vs-side" id="vs-chr" onclick="setView('charity')" tabindex="0" role="button" title="Organisation view">
+    <div class="vs-side" id="vs-chr" onclick="setView('charity');showScreen('volley-back')" tabindex="0" role="button" title="Organisation view">
       <span class="vs-icon">🏠</span>
       <select class="vs-select" id="toggle-org-select" onchange="setOrgFromToggle(this.value)" onfocus="setView('charity')" onclick="setView('charity');event.stopPropagation()" aria-label="Choose organisation">
         <option value="hmc">Hackney Migrant Centre</option>
@@ -1189,7 +1234,7 @@ body.swipe-dragging{
     </div>
   </div>
 
-    <div class="section">
+    <div class="section home-feature-section">
     <p class="sec-label">What makes Volley different</p>
     <h2 class="sec-title">One platform. Four things you can&rsquo;t find anywhere else.</h2>
     <div class="feat-grid">
@@ -2161,7 +2206,7 @@ const VDATA = {
 
 let activeVol = 'chelsea', cardIdx = 0;
 var incognitoMode = false;
-let isDragging = false, startX = 0, startY = 0, curX = 0;
+let isDragging = false, startX = 0, startY = 0, curX = 0, curY = 0;
 let sparkTyping = false;
 
 
@@ -2370,6 +2415,7 @@ function renderCards() {
     el.innerHTML =
       '<div class="stamp-like">Apply \u2713</div>' +
       '<div class="stamp-nope">Pass \u2715</div>' +
+      '<div class="stamp-super">Super \u26A1</div>' +
       imgArea + body + strip + sdgRow + aboutSection;
 
     if (cls === 'c1') addDrag(el);
@@ -2381,80 +2427,108 @@ function renderCards() {
 // renderProf replaced by renderVolProfileBar
 
 // One-time global drag handlers
-let _dragEl = null, _likeStamp = null, _nopeStamp = null;
+let _dragEl = null, _likeStamp = null, _nopeStamp = null, _superStamp = null;
+
+function updateSwipeVisual(x, y) {
+  if (!_dragEl) return;
+  curX = x;
+  curY = y;
+  var upward = curY < -18 && Math.abs(curY) > Math.abs(curX) * 0.65;
+  var displayY = curY < 0 ? curY : curY * 0.22;
+  _dragEl.style.transform = 'translate(' + curX + 'px,' + displayY + 'px) rotate(' + (curX * 0.035) + 'deg)';
+
+  if (_superStamp) _superStamp.style.opacity = upward ? Math.min((-curY - 18) / 70, 1) : 0;
+  if (_likeStamp) _likeStamp.style.opacity = (!upward && curX > 20) ? Math.min((curX - 20) / 60, 1) : 0;
+  if (_nopeStamp) _nopeStamp.style.opacity = (!upward && curX < -20) ? Math.min((-curX - 20) / 60, 1) : 0;
+}
+
+function clearSwipeVisual() {
+  if (_likeStamp) _likeStamp.style.opacity = 0;
+  if (_nopeStamp) _nopeStamp.style.opacity = 0;
+  if (_superStamp) _superStamp.style.opacity = 0;
+}
+
+function resolveSwipeDirection(pointerType) {
+  var upThreshold = pointerType === 'touch' ? -58 : -70;
+  var sideThreshold = pointerType === 'touch' ? 60 : 80;
+  if (curY < upThreshold && Math.abs(curY) > Math.abs(curX) * 0.65) return 'super';
+  if (curX > sideThreshold) return 'right';
+  if (curX < -sideThreshold) return 'left';
+  return null;
+}
+
 document.addEventListener('mousemove', e => {
   if (!isDragging || !_dragEl) return;
-  curX = e.clientX - startX;
-  _dragEl.style.transform = 'translateX(' + curX + 'px) rotate(' + (curX * 0.035) + 'deg)';
-  if (_likeStamp) _likeStamp.style.opacity = curX > 20 ? Math.min((curX - 20) / 60, 1) : 0;
-  if (_nopeStamp) _nopeStamp.style.opacity = curX < -20 ? Math.min((-curX - 20) / 60, 1) : 0;
+  if (e.cancelable) e.preventDefault();
+  updateSwipeVisual(e.clientX - startX, (e.clientY || 0) - startY);
 });
 document.addEventListener('mouseup', () => {
   if (!isDragging || !_dragEl) return;
   isDragging = false; unlockSwipeScroll(); _dragEl.style.transition = '';
-  if (_likeStamp) _likeStamp.style.opacity = 0;
-  if (_nopeStamp) _nopeStamp.style.opacity = 0;
-  if (curX > 80) doSwipe('right');
-  else if (curX < -80) doSwipe('left');
+  var dir = resolveSwipeDirection('mouse');
+  clearSwipeVisual();
+  if (dir) doSwipe(dir);
   else _dragEl.style.transform = '';
-  curX = 0; _dragEl = null;
+  curX = 0; curY = 0; _dragEl = null;
 });
 document.addEventListener('touchmove', e => {
   if (!isDragging || !_dragEl || !e.touches || !e.touches.length) return;
-  curX = e.touches[0].clientX - startX;
-  var dy = e.touches[0].clientY - startY;
-  if (e.cancelable && (Math.abs(curX) > 3 || Math.abs(curX) >= Math.abs(dy))) e.preventDefault();
-  _dragEl.style.transform = 'translateX(' + curX + 'px) rotate(' + (curX * 0.035) + 'deg)';
-  if (_likeStamp) _likeStamp.style.opacity = curX > 20 ? Math.min((curX - 20) / 60, 1) : 0;
-  if (_nopeStamp) _nopeStamp.style.opacity = curX < -20 ? Math.min((-curX - 20) / 60, 1) : 0;
+  if (e.cancelable) e.preventDefault();
+  updateSwipeVisual(e.touches[0].clientX - startX, e.touches[0].clientY - startY);
 }, {passive:false});
 document.addEventListener('touchend', () => {
   if (!isDragging || !_dragEl) return;
   isDragging = false; unlockSwipeScroll(); _dragEl.style.transition = '';
-  if (_likeStamp) _likeStamp.style.opacity = 0;
-  if (_nopeStamp) _nopeStamp.style.opacity = 0;
-  if (curX > 60) doSwipe('right');
-  else if (curX < -60) doSwipe('left');
+  var dir = resolveSwipeDirection('touch');
+  clearSwipeVisual();
+  if (dir) doSwipe(dir);
   else _dragEl.style.transform = '';
-  curX = 0; _dragEl = null;
+  curX = 0; curY = 0; _dragEl = null;
 });
 document.addEventListener('touchcancel', () => {
   if (!isDragging || !_dragEl) return;
   isDragging = false; unlockSwipeScroll();
-  if (_likeStamp) _likeStamp.style.opacity = 0;
-  if (_nopeStamp) _nopeStamp.style.opacity = 0;
+  clearSwipeVisual();
   _dragEl.style.transition = '';
   _dragEl.style.transform = '';
-  curX = 0; _dragEl = null;
+  curX = 0; curY = 0; _dragEl = null;
 });
 
 function addDrag(el) {
   const likeStamp = el.querySelector('.stamp-like');
   const nopeStamp = el.querySelector('.stamp-nope');
+  const superStamp = el.querySelector('.stamp-super');
   el.addEventListener('mousedown', e => {
-    isDragging = true; startX = e.clientX; startY = e.clientY || 0; lockSwipeScroll();
-    _dragEl = el; _likeStamp = likeStamp; _nopeStamp = nopeStamp;
+    if (e.cancelable) e.preventDefault();
+    isDragging = true; startX = e.clientX; startY = e.clientY || 0; curX = 0; curY = 0; lockSwipeScroll();
+    _dragEl = el; _likeStamp = likeStamp; _nopeStamp = nopeStamp; _superStamp = superStamp;
     el.style.transition = 'none';
   });
   el.addEventListener('touchstart', e => {
     if (!e.touches || !e.touches.length) return;
     if (e.cancelable) e.preventDefault();
-    isDragging = true; startX = e.touches[0].clientX; startY = e.touches[0].clientY; lockSwipeScroll();
-    _dragEl = el; _likeStamp = likeStamp; _nopeStamp = nopeStamp;
+    isDragging = true; startX = e.touches[0].clientX; startY = e.touches[0].clientY; curX = 0; curY = 0; lockSwipeScroll();
+    _dragEl = el; _likeStamp = likeStamp; _nopeStamp = nopeStamp; _superStamp = superStamp;
     el.style.transition = 'none';
   }, {passive:false});
 }
 
 function doSwipe(dir) {
   const stack = document.getElementById('cstack');
+  if (!stack) return;
   const top = stack.querySelector('.c1');
   if (!top) return;
   const card = (CARDS[activeVol] || [])[cardIdx];
-  if (dir === 'right' || dir === 'super') {
+  if (dir === 'super') {
+    top.classList.add('go-up');
+    setTimeout(() => { cardIdx++; renderCards(); var isKids=card&&card.org==='The Kids Network';
+    showApplied(card,true);
+    showToast(isKids ? '⚡ Super Applied to Kids Network! Expect a reply within 48 hrs.' : '⚡ Super Applied!'); }, 420);
+  } else if (dir === 'right') {
     top.classList.add('go-right');
     setTimeout(() => { cardIdx++; renderCards(); var isKids=card&&card.org==='The Kids Network';
-    showApplied(card,dir==='super');
-    if(isKids)showToast('⚡ Super Applied to Kids Network! Expect a reply within 48 hrs.'); }, 380);
+    showApplied(card,false);
+    if(isKids)showToast('Applied to Kids Network — they have been notified.'); }, 380);
   } else {
     top.classList.add('go-left');
     setTimeout(() => { cardIdx++; renderCards(); showToast('Passed'); }, 380);
@@ -2478,14 +2552,90 @@ function showToast(m) {
   setTimeout(() => t.classList.remove('on'), 1800);
 }
 
-// ══════════════ THE VOLLEY — org notifications ══════════════
-function volleyBack(btn, org) {
-  const card = btn.closest('.notif-card');
-  card.style.opacity = '0.5';
-  card.style.pointerEvents = 'none';
-  const actions = card.querySelector('.notif-actions');
-  actions.innerHTML = '<span style="font-size:.78rem;font-weight:700;color:var(--teal)">✓ Vollied back! Volunteer Hours record created in Salesforce · You\'ll hear back within 24 hrs</span>';
-  showToast('↔ Vollied back to ' + org + '!');
+// ══════════════ THE VOLLEY — notification actions ══════════════
+function adjustVolleyCount(delta) {
+  var badge = document.getElementById('vb-badge');
+  var navBadge = document.getElementById('nav-vb-badge');
+  var unread = document.getElementById('vb-unread');
+  var current = 0;
+  if (badge && /^\d+$/.test((badge.textContent || '').trim())) current = parseInt(badge.textContent, 10);
+  else if (unread) {
+    var m = (unread.textContent || '').match(/\d+/);
+    current = m ? parseInt(m[0], 10) : 0;
+  }
+  var next = Math.max(0, current + delta);
+  if (badge) {
+    badge.textContent = next;
+    badge.style.display = next ? '' : 'none';
+  }
+  if (navBadge) navBadge.textContent = next;
+  var dot = document.querySelector('#tab-volley-back .vb-unread-badge');
+  if (dot) dot.style.display = next ? '' : 'none';
+  var navDot = document.querySelector('.nav-pill[onclick*="volley-back"] .dot');
+  if (navDot) navDot.style.display = next ? '' : 'none';
+  if (unread) {
+    var suffix = activeView === 'charity' ? ' active' : ' unread';
+    unread.textContent = next + suffix;
+  }
+}
+
+function dismissVolleyNotification(btn, label) {
+  var card = btn && btn.closest ? btn.closest('.notif-card') : null;
+  if (!card) return;
+  card.style.maxHeight = card.offsetHeight + 'px';
+  requestAnimationFrame(function(){ card.classList.add('is-clearing'); });
+  setTimeout(function(){ if (card && card.parentNode) card.parentNode.removeChild(card); }, 300);
+  adjustVolleyCount(-1);
+  showToast(label && label.toLowerCase().indexOf('decline') > -1 ? 'Declined — notification cleared.' : 'Notification cleared.');
+}
+
+function volleyBack(btn, org, label) {
+  var card = btn && btn.closest ? btn.closest('.notif-card') : null;
+  if (!card) return;
+  var action = (label || '').toLowerCase();
+  var volunteer = (VDATA[activeVol] && VDATA[activeVol].name) ? VDATA[activeVol].name : 'You';
+  var title = 'Accepted';
+  var body = 'You accepted this Volley. We\'ll let ' + org + ' know and keep the next steps here.';
+  if (action.indexOf('confirm') > -1) {
+    title = 'Availability confirmed';
+    body = 'Thanks — your availability has been confirmed. We\'ll notify ' + org + ' now.';
+  } else if (action.indexOf('apply') > -1 || action.indexOf('yes') > -1) {
+    title = 'Vollied back';
+    body = 'Your response has been sent to ' + org + '. The organisation has been notified and your application is now in progress.';
+  }
+  card.className = 'notif-card';
+  card.style.borderLeft = '4px solid var(--teal)';
+  card.style.opacity = '1';
+  card.style.pointerEvents = 'auto';
+  card.innerHTML =
+    '<div class="notif-icon" style="background:var(--teal-xl)">✅</div>' +
+    '<div class="notif-body">' +
+      '<div class="notif-header">' +
+        '<div class="notif-from">' + title + ' · <span style="color:var(--teal);font-weight:700;font-size:.65rem">Organisation notified</span></div>' +
+        '<div class="notif-time">Just now</div>' +
+      '</div>' +
+      '<div class="notif-msg">' + body + ' A confirmation has been added for ' + volunteer + '.</div>' +
+      '<div class="notif-actions">' +
+        '<button class="notif-btn notif-btn-p" onclick="showScreen(\'impact\')">→ View impact record</button>' +
+        '<button class="notif-btn notif-btn-s" onclick="showToast(\'You are already in The Volley.\')">Stay in The Volley</button>' +
+      '</div>' +
+    '</div>';
+  adjustVolleyCount(-1);
+  showToast('✅ Accepted — ' + org + ' has been notified.');
+}
+
+function completeOrgAction(btn, person, actionText) {
+  var card = btn && btn.closest ? btn.closest('.notif-card') : null;
+  if (!card) return;
+  var action = actionText || 'accepted';
+  var lowerAction = String(action).toLowerCase();
+  var pronoun = (person === 'Chelsea') ? 'her' : (person === 'Sukie' ? 'her' : 'them');
+  var actionLabel = lowerAction.indexOf('confirm') > -1 ? 'confirmed' : 'accepted';
+  card.style.maxHeight = card.offsetHeight + 'px';
+  requestAnimationFrame(function(){ card.classList.add('is-clearing'); });
+  setTimeout(function(){ if (card && card.parentNode) card.parentNode.removeChild(card); }, 300);
+  adjustVolleyCount(-1);
+  showToast('✅ ' + person + ' ' + actionLabel + ' — we’ll let ' + pronoun + ' know.');
 }
 
 // ══════════════ ORGS ══════════════
@@ -2563,7 +2713,7 @@ function renderOrgs(){
     var regBadge=(o.reg&&o.reg!=='N/A'&&o.reg!=='Pending')?'&#10003; CC Reg: '+o.reg:(o.reg==='Pending'?'&#128336; Verification pending':'&#10003; Verified partner');
     var hasAnyDBS=o.projs&&o.projs.some(function(p){return p.dbs;});
     var dbsNote=hasAnyDBS?' <span style="font-size:.62rem;color:#1A2B4A;font-weight:700">🛡️ DBS roles</span>':'';
-    return '<div class="org-card" data-sdgs="'+(o.sdgs||[]).join(',')+'">'+'<div class="org-hdr">'+'<div class="org-em" style="background:'+o.bg+';color:'+o.ec+'">'+o.em+'</div>'+'<div style="min-width:0;flex:1">'+'<div class="org-n">'+o.name+'</div>'+'<div class="org-t">'+o.type+'</div>'+'<div class="org-v">'+regBadge+dbsNote+'</div>'+'<div style="margin-top:5px;line-height:1.6">'+sdgBadgesHTML+'</div>'+'</div>'+'</div>'+'<div class="org-projs">'+o.projs.map(function(p){  var dbsHTML=p.dbs?'<div style="margin-top:3px">'+makeDbasBadge(p.dbs)+'</div>':'';  return '<div class="proj-r" data-orgid="'+o.id+'" data-proj="'+p.t.replace(/"/g,'&quot;')+'" onclick="showOrgRole(this.dataset.orgid,this.dataset.proj)">'+'<div class="proj-pip" style="background:'+p.d+'"></div>'+'<div style="flex:1;min-width:0">'+'<div class="proj-n">'+p.t+'</div>'+'<div class="proj-t">'+p.ti+'</div>'+dbsHTML+(p.direct?'<button onclick="event.stopPropagation();applyFromOrg(\''+o.id+'\',\''+p.t.replace(/'/g,"\\'")+'\')" style="font-size:.6rem;font-weight:800;background:var(--teal);color:white;border:none;border-radius:100px;padding:3px 9px;cursor:pointer;font-family:inherit;margin-top:5px;display:inline-block">⚡ Apply directly</button>':'')+'</div>'+'</div>';
+    return '<div class="org-card" data-sdgs="'+(o.sdgs||[]).join(',')+'">'+'<div class="org-hdr" onclick="setActiveOrg(\''+o.id+'\');showScreen(\'volley-back\')">'+'<div class="org-em" style="background:'+o.bg+';color:'+o.ec+'">'+o.em+'</div>'+'<div style="min-width:0;flex:1">'+'<div class="org-n">'+o.name+'</div>'+'<div class="org-t">'+o.type+'</div>'+'<div class="org-v">'+regBadge+dbsNote+'</div>'+'<div style="margin-top:5px;line-height:1.6">'+sdgBadgesHTML+'</div>'+'</div>'+'</div>'+'<div class="org-projs">'+o.projs.map(function(p){  var dbsHTML=p.dbs?'<div style="margin-top:3px">'+makeDbasBadge(p.dbs)+'</div>':'';  return '<div class="proj-r" data-orgid="'+o.id+'" data-proj="'+p.t.replace(/"/g,'&quot;')+'" onclick="event.stopPropagation();showOrgRole(this.dataset.orgid,this.dataset.proj)">'+'<div class="proj-pip" style="background:'+p.d+'"></div>'+'<div style="flex:1;min-width:0">'+'<div class="proj-n">'+p.t+'</div>'+'<div class="proj-t">'+p.ti+'</div>'+dbsHTML+(p.direct?'<button onclick="event.stopPropagation();applyFromOrg(\''+o.id+'\',\''+p.t.replace(/'/g,"\\'")+'\')" style="font-size:.6rem;font-weight:800;background:var(--teal);color:white;border:none;border-radius:100px;padding:3px 9px;cursor:pointer;font-family:inherit;margin-top:5px;display:inline-block">⚡ Apply directly</button>':'')+'</div>'+'</div>';
 }).join('')+'</div>'+'</div>';
   }).join('');
 }
@@ -3091,11 +3241,19 @@ function renderVolleyBack(v) {
     var iconBg = n.type === 'match' ? 'background:var(--purp-l)' : 'background:var(--teal-xl)';
         var actBtns = n.actions.map(function(a) {
       var btnCls=a[0]==='vb-p'?'notif-btn notif-btn-p':'notif-btn notif-btn-s';
+      var label=a[1];
+      var lower=label.toLowerCase();
       var oc;
-      if(a[1]==='See card'){oc='showMatchCard(\''+v+'\',1)';}
-      else if(a[1].indexOf('Apply')>-1||a[1]==='✓ Apply now'){oc="volleyBack(this,'"+(n.org||'')+"')";}
-      else{oc="showScreen('spark')";}
-      return '<button class="'+btnCls+'" onclick="'+oc+'">'+(a[2]?a[2]+' ':'')+a[1]+'</button>';
+      if(label==='See card'||label==='View role'){
+        oc='showMatchCard(\''+v+'\',1)';
+      } else if(lower.indexOf('spark')>-1){
+        oc="showScreen('spark')";
+      } else if(lower.indexOf('maybe')>-1 || lower.indexOf('decline')>-1){
+        oc="dismissVolleyNotification(this,'"+label.replace(/'/g,"\\'")+"')";
+      } else {
+        oc="volleyBack(this,'"+(n.org||'')+"','"+label.replace(/'/g,"\\'")+"')";
+      }
+      return '<button class="'+btnCls+'" onclick="'+oc+'">'+(a[2]?a[2]+' ':'')+label+'</button>';
     }).join('');
     html += '<div class="' + cls + '">' +
       '<div class="notif-icon" style="' + iconBg + '">' + n.icon + '</div>' +
@@ -3221,7 +3379,7 @@ var CHARITY_ORG_DATA={
   abbey:{name:'Abbey Community Centre',av:'AC',bg:'#E0ECFC',c:'#1A5EA8',role:'Volunteer Coordinator · CC Reg 1054914',vols:52,hrs:178,mentions:25,wwa:'95%'}
 };
 function setVolFromToggle(v){setVol(v); if(activeView!=='volunteer') setView('volunteer'); else showToast('👤 Switched to '+(VDATA[v]?VDATA[v].name:v));}
-function setOrgFromToggle(orgId){setActiveOrg(orgId);}
+function setOrgFromToggle(orgId){setActiveOrg(orgId);showScreen('volley-back');}
 function setActiveOrg(orgId){
   activeOrg=orgId; var d=CHARITY_ORG_DATA[orgId]; if(!d)return;
   var orgSel=document.getElementById('toggle-org-select'); if(orgSel) orgSel.value=orgId;
@@ -3320,7 +3478,7 @@ function _renderCharityInbox(){
       '<div class="notif-time">2 min ago</div></div>'+
       '<div class="notif-msg">Chelsea has 10 yrs ESG &amp; Comms. Super Applied to <strong>Child Mentoring Programme</strong>. Enhanced DBS pending.</div>'+
       '<div class="notif-actions">'+
-        '<button class="notif-btn notif-btn-p" onclick="showToast(\'✅ Chelsea confirmed! Volunteer_Hours__c created in Salesforce.\')">✅ Accept Chelsea</button>'+
+        '<button class="notif-btn notif-btn-p" onclick="completeOrgAction(this,\'Chelsea\',\'accepted\')">✅ Accept Chelsea</button>'+
         '<button class="notif-btn notif-btn-s" onclick="showToast(\'Profile viewed\')">View profile</button>'+
       '</div></div></div>';
   } else {
@@ -3341,7 +3499,7 @@ function _renderCharityInbox(){
       '<div class="notif-card match-alert"><div class="notif-icon" style="background:var(--purp-l)">&#9889;</div>'+
         '<div class="notif-body"><div class="notif-header"><div class="notif-from">Eashwar Ramesh — 94% match</div><div class="notif-time">3 hrs ago</div></div>'+
         '<div class="notif-msg">Applied to Fundraising Strategy role. Strategy & Growth skills, half-day commitment.</div>'+
-        '<div class="notif-actions"><button class="notif-btn notif-btn-p" onclick="showToast(\'Confirmed!\')">✅ Confirm</button>'+
+        '<div class="notif-actions"><button class="notif-btn notif-btn-p" onclick="completeOrgAction(this,\'Eashwar\',\'confirmed\')">✅ Confirm</button>'+
           '<button class="notif-btn notif-btn-s" onclick="showToast(\'Profile viewed\')">View profile</button></div></div></div>'+
       '<div class="notif-card" style="border-left:4px solid var(--coral)"><div class="notif-icon" style="background:#FDEAF3">✅</div>'+
         '<div class="notif-body"><div class="notif-header"><div class="notif-from">Sukie Gandhi · <span style="color:var(--coral);font-weight:600;font-size:.65rem">Confirmed</span></div><div class="notif-time">Yesterday</div></div>'+
@@ -3493,7 +3651,7 @@ function _renderCharitySocial(orgId){
         '<div style="font-size:.78rem;line-height:1.5">Tagged @Kids Network in her application. 97% match. ESG &amp; Comms background, 10 yrs exp. Enhanced DBS pending. '+
           '<span style="color:var(--teal);font-weight:700">SDG 4 · SDG 10 · SDG 3</span></div>'+
         '<div style="margin-top:.5rem;font-size:.72rem;color:var(--mid)">' +
-          '<button onclick="showToast(\'✅ Chelsea confirmed! Volunteer_Hours__c created in Salesforce.\')" style="font-size:.65rem;font-weight:700;background:var(--teal);color:white;border:none;border-radius:100px;padding:3px 9px;cursor:pointer;font-family:inherit">' +
+          '<button onclick="completeOrgAction(this,\'Chelsea\',\'accepted\')" style="font-size:.65rem;font-weight:700;background:var(--teal);color:white;border:none;border-radius:100px;padding:3px 9px;cursor:pointer;font-family:inherit">' +
           '✅ Accept Chelsea</button> &nbsp; '+
           '<button onclick="showToast(\'Profile viewed\')" style="font-size:.65rem;font-weight:700;background:transparent;color:var(--teal);border:1px solid var(--teal);border-radius:100px;padding:3px 9px;cursor:pointer;font-family:inherit">View profile</button></div>'+
         '</div></div></div>'+
